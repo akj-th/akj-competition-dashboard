@@ -6,45 +6,37 @@
 <title>AKJ Competition Dashboard</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
 :root{
   --red:#e60235;--red-l:#fff0f3;--red-m:#ffd6df;--red-d:#b50029;
-  --black:#111;--g9:#1a1a1a;--g7:#444;--g5:#777;--g4:#999;
-  --g3:#ccc;--g2:#e0e0e0;--g1:#f4f4f4;--g0:#fafafa;
+  --black:#111;--g7:#444;--g5:#777;--g4:#999;--g3:#ccc;--g2:#e0e0e0;--g1:#f4f4f4;--g0:#fafafa;
   --white:#fff;--border:#e8e8e8;
-  --font:'Pretendard',sans-serif;--mono:'Pretendard',sans-serif;
-  --sw:268px;--hh:60px;
+  --font:'Pretendard',sans-serif;--sw:268px;--hh:60px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:var(--font);background:var(--white);color:var(--black);font-size:14px;line-height:1.6;}
 button,input,textarea,select{font-family:var(--font);}
 button{cursor:pointer;}
-
-/* HEADER */
 .hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);background:var(--white);border-bottom:2px solid var(--red);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200;}
 .logo{display:flex;align-items:center;gap:14px;}
 .logo img{height:38px;width:auto;display:block;}
-.logo-title{font-size:13px;font-weight:500;letter-spacing:0.02em;color:var(--black);}
+.logo-title{font-size:13px;font-weight:500;letter-spacing:0.02em;}
 .hdr-r{display:flex;align-items:center;gap:8px;}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--g3);flex-shrink:0;transition:background .3s;}
 .sync-dot.live{background:#16a34a;}
-.sync-dot.syncing{background:#f59e0b;animation:pulse .8s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* BUTTONS */
+.sync-dot.syncing{background:#f59e0b;animation:blink .8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;font-size:13px;border:1px solid var(--border);background:var(--white);color:var(--g7);transition:all .13s;white-space:nowrap;cursor:pointer;}
 .btn:hover{border-color:var(--g3);background:var(--g0);}
 .btn-p{background:var(--red);border-color:var(--red);color:#fff;font-weight:500;}
-.btn-p:hover{background:var(--red-d);border-color:var(--red-d);}
+.btn-p:hover{background:var(--red-d);}
 .btn-ghost{border-color:transparent;background:transparent;}
 .btn-ghost:hover{background:var(--g1);}
 .btn-sm{padding:5px 11px;font-size:12px;}
 .btn-danger{border-color:var(--red);color:var(--red);}
 .btn-danger:hover{background:var(--red-l);}
-.btn-outline{border-color:var(--red);color:var(--red);background:var(--white);}
-.btn-outline:hover{background:var(--red-l);}
-
-/* LAYOUT */
 .app{display:flex;padding-top:var(--hh);min-height:100vh;}
 .sidebar{width:var(--sw);flex-shrink:0;border-right:1px solid var(--border);position:fixed;top:var(--hh);bottom:0;left:0;overflow-y:auto;background:var(--g0);}
 .sb-top{padding:16px 16px 8px;}
@@ -54,27 +46,20 @@ button{cursor:pointer;}
 .pi.active{background:var(--white);border-left-color:var(--red);}
 .pi-name{font-size:13px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pi-meta{display:flex;align-items:center;gap:6px;margin-top:3px;}
-.db{font-size:10px;padding:1px 7px;border:1px solid;font-weight:400;}
+.db{font-size:10px;padding:1px 7px;border:1px solid;}
 .db-ok{border-color:var(--g3);color:var(--g5);}
 .db-warn{border-color:#f59e0b;color:#d97706;background:#fffbeb;}
 .db-danger{border-color:var(--red);color:var(--red);background:var(--red-l);}
 .dp{font-size:10px;color:var(--g4);}
-
-/* MAIN */
 .main{margin-left:var(--sw);flex:1;padding:36px 40px;min-height:calc(100vh - var(--hh));}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;text-align:center;}
-.empty-box{width:48px;height:48px;border:2px solid var(--g2);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:22px;color:var(--g3);}
-.empty-txt{font-size:13px;color:var(--g4);}
-
-/* DETAIL */
+.empty-box{width:48px;height:48px;border:2px solid var(--g2);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--g3);}
 .proj-title{font-size:22px;font-weight:700;line-height:1.3;margin-bottom:4px;}
 .proj-sub{font-size:13px;color:var(--g5);margin-bottom:16px;}
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px;}
 .tag{font-size:11px;padding:3px 9px;border:1px solid var(--border);color:var(--g7);}
 .tag-r{border-color:var(--red);color:var(--red);background:var(--red-l);}
 .tag-b{border-color:#3b82f6;color:#2563eb;background:#eff6ff;}
-
-/* COUNTDOWN */
 .cd-bar{display:flex;border:1px solid var(--border);margin-bottom:32px;}
 .cd-cell{padding:16px 22px;flex:1;}
 .cd-cell+.cd-cell{border-left:1px solid var(--border);}
@@ -83,23 +68,17 @@ button{cursor:pointer;}
 .cd-ok{color:#16a34a;}.cd-warn{color:#d97706;}.cd-danger{color:var(--red);}
 .prog-track{height:3px;background:var(--g1);margin-top:10px;}
 .prog-fill{height:100%;background:var(--red);transition:width .4s ease;}
-
-/* INFO GRID */
 .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));border:1px solid var(--border);margin-bottom:28px;}
 .ic{padding:13px 15px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
 .ic-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);margin-bottom:4px;}
 .ic-val{font-size:13px;font-weight:500;}
-
-/* STAGE TABS */
 .stage-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:28px;overflow-x:auto;}
 .stab{padding:10px 18px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:none;background:none;color:var(--g4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;}
 .stab:hover{color:var(--black);}
 .stab.active{color:var(--red);border-bottom-color:var(--red);font-weight:600;}
 .stab.s-done{color:var(--g3);}
-
-/* AI PANEL */
 .ai-panel{border:1px solid var(--border);margin-bottom:32px;}
-.ai-ph{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--g0);border-bottom:1px solid var(--border);}
+.ai-ph{display:flex;align-items:center;padding:11px 16px;background:var(--g0);border-bottom:1px solid var(--border);}
 .ai-pt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g7);display:flex;align-items:center;gap:8px;}
 .ai-bw{font-size:10px;padding:2px 7px;font-weight:500;}
 .bg{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;}
@@ -110,10 +89,10 @@ button{cursor:pointer;}
 .ai-sc{padding:5px 11px;font-size:11px;border:1px solid var(--border);background:white;color:var(--g7);cursor:pointer;transition:all .12s;}
 .ai-sc:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
 .ai-row{display:flex;gap:7px;}
-.ai-inp{flex:1;padding:8px 12px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;}
+.ai-inp{flex:1;padding:8px 12px;border:1px solid var(--border);font-size:13px;outline:none;}
 .ai-inp:focus{border-color:var(--red);}
 .ai-sel{padding:8px 10px;border:1px solid var(--border);background:white;font-size:11px;color:var(--g7);outline:none;}
-.ai-run{padding:8px 16px;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;white-space:nowrap;}
+.ai-run{padding:8px 16px;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;}
 .ai-run:hover{background:var(--red-d);}
 .ai-loading{display:none;align-items:center;gap:10px;padding:14px 0;color:var(--g5);font-size:12px;}
 .ai-loading.show{display:flex;}
@@ -124,14 +103,12 @@ button{cursor:pointer;}
 .ai-out-sec{margin-bottom:14px;}
 .ai-out-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
 .ai-out-lbl.g{color:#2e7d32;}.ai-out-lbl.c{color:var(--red);}
-.ai-out-box{padding:12px 14px;font-size:12px;line-height:1.8;color:var(--g7);white-space:pre-wrap;border:1px solid var(--border);background:var(--g0);max-height:180px;overflow-y:auto;}
-.ai-out-box.cl{font-size:13px;color:var(--g9);background:white;max-height:none;}
+.ai-out-box{padding:12px 14px;font-size:12px;line-height:1.8;color:var(--g7);white-space:pre-wrap;border:1px solid var(--border);background:var(--g0);max-height:200px;overflow-y:auto;}
+.ai-out-box.cl{font-size:13px;color:#1a1a1a;background:white;max-height:none;}
 .step-ind{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:11px;}
 .sdot{width:8px;height:8px;border-radius:50%;background:var(--g2);}
 .sdot.active{background:var(--red);}.sdot.done{background:#16a34a;}
 .slbl{color:var(--g4);}.slbl.active{color:var(--red);}.slbl.done{color:#16a34a;}
-
-/* CHECKLIST */
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .sec-ttl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);}
 .chk-list{border-top:1px solid var(--border);}
@@ -143,50 +120,37 @@ button{cursor:pointer;}
 .chk-txt{font-size:13px;line-height:1.5;}
 .chk-txt.done{color:var(--g3);text-decoration:line-through;}
 .chk-sub{font-size:11px;color:var(--g4);margin-top:2px;}
-
-/* PROGRAM TABLE */
 .prog-table{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:13px;}
 .prog-table th{background:var(--g0);padding:8px 12px;text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g5);border:1px solid var(--border);font-weight:400;}
 .prog-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:middle;}
-.prog-table td:last-child{text-align:right;}
 .del-btn{background:none;border:none;color:var(--g3);cursor:pointer;font-size:14px;padding:0 4px;}
 .del-btn:hover{color:var(--red);}
 .prog-total{display:flex;justify-content:flex-end;padding:8px 12px;font-size:12px;color:var(--g7);border:1px solid var(--border);border-top:none;background:var(--g0);}
-
-/* PROGRAM INPUT */
 .prog-add-wrap{border:1px solid var(--border);padding:14px;margin-bottom:8px;background:var(--g0);}
 .prog-add-ttl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);margin-bottom:10px;}
 .prog-input-row{display:grid;grid-template-columns:1fr 1.5fr 1fr auto;gap:8px;align-items:end;}
-.prog-input-row input{padding:8px 10px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;width:100%;}
+.prog-input-row input{padding:8px 10px;border:1px solid var(--border);font-size:13px;outline:none;width:100%;}
 .prog-input-row input:focus{border-color:var(--red);}
-.prog-input-row .add-btn{padding:8px 14px;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;white-space:nowrap;}
-
-/* NOTES */
-.notes-area{width:100%;padding:12px 14px;border:1px solid var(--border);background:white;font-size:13px;color:var(--black);resize:vertical;min-height:100px;outline:none;line-height:1.7;font-weight:300;transition:border-color .13s;}
+.add-btn{padding:8px 14px;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;}
+.notes-area{width:100%;padding:12px 14px;border:1px solid var(--border);background:white;font-size:13px;color:var(--black);resize:vertical;min-height:100px;outline:none;line-height:1.7;font-weight:300;}
 .notes-area:focus{border-color:var(--red);}
 .section{margin-bottom:32px;}
-
-/* MODAL */
 .overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.35);align-items:center;justify-content:center;}
 .overlay.open{display:flex;}
 .modal{background:white;border:1px solid var(--border);width:700px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,.1);}
 .modal-hd{padding:18px 24px;border-bottom:2px solid var(--red);display:flex;align-items:center;justify-content:space-between;}
-.modal-ttl{font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.modal-ttl{font-size:15px;font-weight:700;}
 .modal-x{background:none;border:none;font-size:22px;color:var(--g4);cursor:pointer;line-height:1;}
-.modal-x:hover{color:var(--black);}
 .modal-body{padding:24px;}
 .modal-ft{padding:0 24px 24px;display:flex;justify-content:flex-end;gap:8px;}
 .field{margin-bottom:18px;}
 .field label{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);margin-bottom:7px;}
-.field input,.field textarea,.field select{width:100%;padding:9px 12px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;background:white;color:var(--black);}
+.field input,.field textarea,.field select{width:100%;padding:9px 12px;border:1px solid var(--border);font-size:13px;outline:none;background:white;color:var(--black);}
 .field input:focus,.field textarea:focus{border-color:var(--red);}
 .field textarea{resize:vertical;min-height:70px;font-weight:300;line-height:1.7;}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
-
-/* FILE UPLOAD */
 .upload-zone{border:1px dashed var(--red);background:var(--red-l);padding:20px;text-align:center;cursor:pointer;position:relative;}
-.upload-zone:hover{background:var(--red-m);}
 .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 .upload-zone-txt{font-size:12px;color:var(--red);}
 .upload-zone-sub{font-size:11px;color:var(--g5);margin-top:4px;}
@@ -194,39 +158,29 @@ button{cursor:pointer;}
 .upload-status.show{display:flex;}
 .upload-status.ok{border-color:#16a34a;color:#16a34a;background:#f0fdf4;}
 .upload-status.err{border-color:var(--red);color:var(--red);background:var(--red-l);}
-
-/* URL INPUT */
 .url-row{display:flex;gap:8px;}
 .url-row input{flex:1;padding:9px 12px;border:1px solid var(--border);font-size:13px;outline:none;}
-.url-row input:focus{border-color:var(--red);}
-.url-analyze-btn{padding:9px 16px;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;white-space:nowrap;}
+.url-analyze-btn{padding:9px 16px;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;}
 .url-analyze-btn:disabled{opacity:.4;cursor:not-allowed;}
 .a-loading{display:none;align-items:center;gap:9px;padding:10px 0;font-size:11px;color:var(--g5);}
 .a-loading.show{display:flex;}
 .ai-prev{display:none;border:1px solid var(--border);background:var(--g0);padding:14px;margin-top:14px;}
 .ai-prev.show{display:block;}
-.prev-row{display:flex;gap:10px;font-size:11px;margin-bottom:5px;line-height:1.5;}
+.prev-row{display:flex;gap:10px;font-size:11px;margin-bottom:5px;}
 .prev-k{color:var(--red);min-width:80px;flex-shrink:0;}
 .prev-v{color:var(--g7);}
 .divtxt{text-align:center;font-size:10px;color:var(--g3);padding:14px 0;position:relative;}
 .divtxt::before,.divtxt::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--border);}
 .divtxt::before{left:0;}.divtxt::after{right:0;}
-.section-sep{border:none;border-top:1px solid var(--border);margin:20px 0;}
-
-/* DRAWER */
+.sep{border:none;border-top:1px solid var(--border);margin:20px 0;}
 .drawer{position:fixed;top:var(--hh);right:0;bottom:0;width:320px;z-index:300;background:white;border-left:1px solid var(--border);transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;padding:24px;}
 .drawer.open{transform:translateX(0);}
 .drw-ttl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--g4);margin-bottom:20px;}
-
-/* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--black);color:white;padding:10px 18px;font-size:12px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
 .toast.show{opacity:1;}
-
-/* DEBUG */
-.debug-panel{display:none;background:#1a1a1a;color:#00ff88;font-size:11px;padding:12px 14px;margin-top:8px;line-height:1.8;max-height:200px;overflow-y:auto;white-space:pre-wrap;}
+.debug-panel{display:none;background:#111;color:#00ff88;font-size:11px;padding:12px;margin-top:8px;max-height:180px;overflow-y:auto;white-space:pre-wrap;}
 .debug-panel.show{display:block;}
 .debug-toggle{font-size:10px;color:var(--g4);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
-
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--g2);}
 .hidden{display:none!important;}
 </style>
@@ -238,13 +192,12 @@ button{cursor:pointer;}
     <span class="logo-title">AKJ Competition Dashboard</span>
   </div>
   <div class="hdr-r">
-    <div class="sync-dot" id="sync-dot" title="DB 연결 상태"></div>
+    <div class="sync-dot" id="sync-dot"></div>
     <span id="pcnt" style="font-size:11px;color:var(--g4)"></span>
     <button class="btn btn-ghost btn-sm" onclick="toggleDrawer()">⚙ 설정</button>
     <button class="btn btn-p btn-sm" onclick="openAdd()">+ 공모 추가</button>
   </div>
 </header>
-
 <div class="app">
   <aside class="sidebar">
     <div class="sb-top"><div class="sb-label">Projects</div></div>
@@ -253,14 +206,13 @@ button{cursor:pointer;}
   <main class="main">
     <div class="empty" id="empty">
       <div class="empty-box">+</div>
-      <div class="empty-txt">공모 프로젝트가 없습니다</div>
+      <div style="font-size:13px;color:var(--g4)">공모 프로젝트가 없습니다</div>
       <button class="btn btn-p" onclick="openAdd()">+ 첫 공모 추가하기</button>
     </div>
     <div id="detail" class="hidden"></div>
   </main>
 </div>
 <div class="toast" id="toast"></div>
-
 <!-- SETTINGS DRAWER -->
 <div class="drawer" id="drawer">
   <div class="drw-ttl">설정</div>
@@ -272,10 +224,10 @@ button{cursor:pointer;}
   <button class="btn btn-p" style="width:100%;margin-bottom:8px" onclick="saveKey()">저장</button>
   <button class="btn btn-sm" style="width:100%;margin-bottom:20px;font-size:11px" onclick="testConn()">⚡ AI 연결 테스트</button>
   <div id="test-result" style="display:none;font-size:11px;padding:10px;border:1px solid var(--border);margin-bottom:16px;white-space:pre-wrap;"></div>
-  <hr class="section-sep">
+  <hr class="sep">
   <div class="field"><label>데이터 내보내기</label><button class="btn" style="width:100%" onclick="exportData()">JSON 내보내기</button></div>
   <div class="field"><label>데이터 가져오기</label><input type="file" id="imp-file" accept=".json" onchange="importData(event)" style="font-size:12px;color:var(--g5)"/></div>
-  <hr class="section-sep">
+  <hr class="sep">
   <button class="btn btn-danger" style="width:100%" onclick="clearAll()">모든 데이터 초기화</button>
 </div>
 
@@ -306,7 +258,7 @@ button{cursor:pointer;}
       </div>
       <div class="a-loading" id="a-loading"><div class="spinner"></div><span id="a-ltxt">AI 분석 중...</span></div>
       <div class="ai-prev" id="ai-prev"></div>
-      <hr class="section-sep">
+      <hr class="sep">
       <div style="font-size:10px;color:var(--g4);margin-bottom:16px;letter-spacing:.1em;text-transform:uppercase">공모 정보 입력</div>
       <div class="field"><label>공모명 *</label><input type="text" id="f-name" placeholder="예: 서울창업허브 관악 설계공모"/></div>
       <div class="field-row" style="margin-bottom:18px">
@@ -327,14 +279,23 @@ button{cursor:pointer;}
         <div class="field" style="margin-bottom:0"><label>제출물 규격</label><input type="text" id="f-deliverables" placeholder="예: A1 패널 5매"/></div>
       </div>
       <div class="field"><label>심사위원 / 특이사항</label><textarea id="f-notes" style="min-height:60px" placeholder="심사 전략, 가점 요인..."></textarea></div>
-      <hr class="section-sep">
+      <hr class="sep">
       <div style="font-size:10px;color:var(--g4);margin-bottom:14px;letter-spacing:.1em;text-transform:uppercase">요구 프로그램</div>
       <div class="prog-add-wrap">
         <div class="prog-add-ttl">항목 추가</div>
         <div class="prog-input-row">
-          <div><label style="font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">대분류</label><input type="text" id="pi-cat" placeholder="예: 창업지원"/></div>
-          <div><label style="font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">프로그램명</label><input type="text" id="pi-prog" placeholder="예: 창업지원실"/></div>
-          <div><label style="font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">면적 (㎡)</label><input type="number" id="pi-area" placeholder="예: 500"/></div>
+          <div>
+            <label style="font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">대분류</label>
+            <input type="text" id="pi-cat" placeholder="예: 창업지원"/>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">프로그램명</label>
+            <input type="text" id="pi-prog" placeholder="예: 창업지원실"/>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">면적 (㎡)</label>
+            <input type="number" id="pi-area" placeholder="예: 500"/>
+          </div>
           <button class="add-btn" onclick="addProgItem()">+ 추가</button>
         </div>
       </div>
@@ -342,7 +303,9 @@ button{cursor:pointer;}
         <thead><tr><th>대분류</th><th>프로그램</th><th>면적 (㎡)</th><th></th></tr></thead>
         <tbody id="prog-tbody"></tbody>
       </table>
-      <div class="prog-total" id="prog-total" style="display:none">합계 <span id="prog-sum" style="color:var(--red);font-weight:600;margin-left:8px">0</span> ㎡</div>
+      <div class="prog-total" id="prog-total" style="display:none">
+        합계 <span id="prog-sum" style="color:var(--red);font-weight:600;margin-left:8px">0</span> ㎡
+      </div>
     </div>
     <div class="modal-ft">
       <button class="btn" onclick="closeAdd()">취소</button>
@@ -350,16 +313,22 @@ button{cursor:pointer;}
     </div>
   </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script>
-// ── SUPABASE CONFIG ────────────────────────────────────────────────
+// ── CONFIG ──────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://uugexirglklppgvdvwxn.supabase.co';
-const EDGE_FN_URL  = SUPABASE_URL + '/functions/v1/claude-proxy';
+const EDGE_FN_URL = SUPABASE_URL + '/functions/v1/claude-proxy';
 const getSbKey = () => localStorage.getItem('sb_key') || 'sb_publishable_YhkaNWrbh74urnUYYFV07g_BBLtocMe';
 let sbClient = null;
+let projects = [];
+let curId = null;
+let curStage = 0;
+let modalProgs = [];
+let realtimeSub = null;
+let debugLog = '';
 
+const $ = id => document.getElementById(id);
+
+// ── SUPABASE ────────────────────────────────────────────────────────
 function initSupabase() {
   const key = getSbKey();
   if (!key || typeof supabase === 'undefined') return null;
@@ -372,113 +341,106 @@ function initSupabase() {
 
 function setSyncDot(state) {
   const d = $('sync-dot');
-  d.className = 'sync-dot' + (state==='live'?' live':state==='syncing'?' syncing':'');
-  d.title = state==='live'?'DB 연결됨':state==='syncing'?'동기화 중...':'DB 연결 안됨';
+  if (!d) return;
+  d.className = 'sync-dot' + (state === 'live' ? ' live' : state === 'syncing' ? ' syncing' : '');
 }
 
-// ── PROXY CALL ─────────────────────────────────────────────────────
+// ── PROXY ────────────────────────────────────────────────────────────
 async function callProxy(system, user) {
   const key = getSbKey();
   if (!key) throw new Error('Supabase Publishable Key가 없습니다. 설정에서 입력해주세요.');
   dbg('[Proxy] calling...');
   const res = await fetch(EDGE_FN_URL, {
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+key},
-    body: JSON.stringify({system, user}),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': key, 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({ system: system, user: user })
   });
   const data = await res.json();
-  if (!res.ok) throw new Error('Edge Function 오류 ('+res.status+'): '+JSON.stringify(data));
-  if (data.error) throw new Error('AI 오류: '+data.error);
-  dbg('[Proxy] OK, '+(data.text||'').length+'자');
+  if (!res.ok) throw new Error('Edge Function 오류 (' + res.status + '): ' + JSON.stringify(data));
+  if (data.error) throw new Error('AI 오류: ' + data.error);
+  dbg('[Proxy] OK, ' + (data.text || '').length + '자');
   return data.text || '';
 }
 
-// ── PDF.js ─────────────────────────────────────────────────────────
+// ── PDF.js ────────────────────────────────────────────────────────────
 if (typeof pdfjsLib !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
 
-// ── CONSTANTS ──────────────────────────────────────────────────────
+// ── CONSTANTS ────────────────────────────────────────────────────────
 const STAGES = [
-  {key:'strategy', label:'전략·리서치', short:'01'},
-  {key:'concept',  label:'분석·컨셉',   short:'02'},
-  {key:'design',   label:'디자인 발전', short:'03'},
-  {key:'production',label:'성과물 제작',short:'04'},
-  {key:'submission',label:'제출·심사',  short:'05'},
+  { key: 'strategy',   label: '전략·리서치', short: '01' },
+  { key: 'concept',    label: '분석·컨셉',   short: '02' },
+  { key: 'design',     label: '디자인 발전', short: '03' },
+  { key: 'production', label: '성과물 제작', short: '04' },
+  { key: 'submission', label: '제출·심사',   short: '05' }
 ];
+
 const CHECKS = {
-  strategy:[
-    {text:'공모 지침서 정독 완료',sub:'목적·연면적·예산·프로그램 파악'},
-    {text:'가점/감점 요인 별도 정리',sub:'제출물 규격 체크 포함'},
-    {text:'마감 역산 스케줄 작성',sub:'CG·패널·모형 제작 기간 포함'},
-    {text:'심사위원 성향 리서치',sub:'과거 작업물·심사평·선호 가치 파악'},
-    {text:'국내외 우수 사례 조사',sub:'유사 프로그램·규모 3건 이상'},
+  strategy: [
+    { text: '공모 지침서 정독 완료', sub: '목적·연면적·예산·프로그램 파악' },
+    { text: '가점/감점 요인 별도 정리', sub: '제출물 규격 체크 포함' },
+    { text: '마감 역산 스케줄 작성', sub: 'CG·패널·모형 제작 기간 포함' },
+    { text: '심사위원 성향 리서치', sub: '과거 작업물·심사평·선호 가치 파악' },
+    { text: '국내외 우수 사례 조사', sub: '유사 프로그램·규모 3건 이상' }
   ],
-  concept:[
-    {text:'현장 답사 완료',sub:'경사도·향·맥락·진입로 확인'},
-    {text:'사이트 분석 정리',sub:'QGIS·지구단위계획 규제 체크'},
-    {text:'프로그램 Adjacency 다이어그램 작성',sub:'발주처 요구 면적표 기반'},
-    {text:'Big Idea / 핵심 컨셉 도출',sub:'단 하나의 강력한 메시지'},
-    {text:'컨셉 키워드 팀 합의',sub:''},
+  concept: [
+    { text: '현장 답사 완료', sub: '경사도·향·맥락·진입로 확인' },
+    { text: '사이트 분석 정리', sub: 'QGIS·지구단위계획 규제 체크' },
+    { text: '프로그램 Adjacency 다이어그램 작성', sub: '발주처 요구 면적표 기반' },
+    { text: 'Big Idea / 핵심 컨셉 도출', sub: '단 하나의 강력한 메시지' },
+    { text: '컨셉 키워드 팀 합의', sub: '' }
   ],
-  design:[
-    {text:'매스 스터디 옵션 3안 이상',sub:'배치도 확정'},
-    {text:'평면·단면 계획 1차 완성',sub:'동선·피난·구조 고려'},
-    {text:'법규 검토 (건폐율·용적률·주차·조경)',sub:'위반 없음 확인'},
-    {text:'디자인 리뷰 — 컨셉·도면 일치 여부',sub:'내부 회의'},
-    {text:'도면 2차 발전 완료',sub:'장애인 편의시설 포함'},
-    {text:'구조·재료 계획 확정',sub:'공사비 범위 내 검토'},
+  design: [
+    { text: '매스 스터디 옵션 3안 이상', sub: '배치도 확정' },
+    { text: '평면·단면 계획 1차 완성', sub: '동선·피난·구조 고려' },
+    { text: '법규 검토 (건폐율·용적률·주차·조경)', sub: '위반 없음 확인' },
+    { text: '디자인 리뷰 — 컨셉·도면 일치 여부', sub: '내부 회의' },
+    { text: '도면 2차 발전 완료', sub: '장애인 편의시설 포함' },
+    { text: '구조·재료 계획 확정', sub: '공사비 범위 내 검토' }
   ],
-  production:[
-    {text:'CG 투시도 제작 (대표 이미지)',sub:'D5 Render / Enscape'},
-    {text:'조감도 제작',sub:''},
-    {text:'도면 컬러링 및 다이어그램 제작',sub:'Illustrator / Photoshop'},
-    {text:'패널 레이아웃 초안 완성',sub:'InDesign — 시선 흐름 전략'},
-    {text:'설계설명서 초안 작성',sub:'AI 활용 권장'},
-    {text:'패널 최종 편집 완료',sub:'제출 규격 확인'},
-    {text:'모형 제작',sub:'요구 시'},
+  production: [
+    { text: 'CG 투시도 제작 (대표 이미지)', sub: 'D5 Render / Enscape' },
+    { text: '조감도 제작', sub: '' },
+    { text: '도면 컬러링 및 다이어그램 제작', sub: 'Illustrator / Photoshop' },
+    { text: '패널 레이아웃 초안 완성', sub: 'InDesign — 시선 흐름 전략' },
+    { text: '설계설명서 초안 작성', sub: 'AI 활용 권장' },
+    { text: '패널 최종 편집 완료', sub: '제출 규격 확인' },
+    { text: '모형 제작', sub: '요구 시' }
   ],
-  submission:[
-    {text:'최종 검수 — 오타·면적 오차',sub:'체크리스트 기준'},
-    {text:'법규 위반 최종 확인',sub:'주차·장애인·층수·조경'},
-    {text:'파일 규격 확인',sub:'DPI·형식·용량'},
-    {text:'온라인 제출 완료',sub:'접수 번호 확보'},
-    {text:'오프라인 제출 완료',sub:'해당 시'},
-    {text:'PT 시나리오 작성',sub:'당선 시 대비 — AI 활용'},
-    {text:'예상 Q&A 답변 준비',sub:'심사위원 성향 기반'},
-  ],
+  submission: [
+    { text: '최종 검수 — 오타·면적 오차', sub: '체크리스트 기준' },
+    { text: '법규 위반 최종 확인', sub: '주차·장애인·층수·조경' },
+    { text: '파일 규격 확인', sub: 'DPI·형식·용량' },
+    { text: '온라인 제출 완료', sub: '접수 번호 확보' },
+    { text: '오프라인 제출 완료', sub: '해당 시' },
+    { text: 'PT 시나리오 작성', sub: '당선 시 대비 — AI 활용' },
+    { text: '예상 Q&A 답변 준비', sub: '심사위원 성향 기반' }
+  ]
 };
+
 const AI_TASKS = {
-  strategy:[{label:'심사위원 성향 리서치',type:'research'},{label:'유사 사례 조사',type:'casestudy'},{label:'공모 핵심 전략 분석',type:'analysis'}],
-  concept:[{label:'사이트·맥락 리서치',type:'research'},{label:'컨셉 키워드 브레인스톰',type:'brainstorm'},{label:'프로그램 Adjacency 초안',type:'analysis'}],
-  design:[{label:'법규 체크리스트 생성',type:'analysis'},{label:'매스 스터디 전략 제안',type:'brainstorm'},{label:'디자인 리뷰 피드백',type:'analysis'}],
-  production:[{label:'설계설명서 초안 작성',type:'draft'},{label:'패널 스토리라인 구성',type:'draft'},{label:'핵심 메시지 카피 작성',type:'draft'}],
-  submission:[{label:'최종 체크리스트 생성',type:'analysis'},{label:'PT 스크립트 초안',type:'draft'},{label:'예상 Q&A 시나리오',type:'draft'}],
+  strategy:   [{ label: '심사위원 성향 리서치', type: 'research' }, { label: '유사 사례 조사', type: 'casestudy' }, { label: '공모 핵심 전략 분석', type: 'analysis' }],
+  concept:    [{ label: '사이트·맥락 리서치', type: 'research' }, { label: '컨셉 키워드 브레인스톰', type: 'brainstorm' }, { label: '프로그램 Adjacency 초안', type: 'analysis' }],
+  design:     [{ label: '법규 체크리스트 생성', type: 'analysis' }, { label: '매스 스터디 전략 제안', type: 'brainstorm' }, { label: '디자인 리뷰 피드백', type: 'analysis' }],
+  production: [{ label: '설계설명서 초안 작성', type: 'draft' }, { label: '패널 스토리라인 구성', type: 'draft' }, { label: '핵심 메시지 카피 작성', type: 'draft' }],
+  submission: [{ label: '최종 체크리스트 생성', type: 'analysis' }, { label: 'PT 스크립트 초안', type: 'draft' }, { label: '예상 Q&A 시나리오', type: 'draft' }]
 };
 
-// ── STATE ──────────────────────────────────────────────────────────
-let projects = [];
-let curId = null, curStage = 0;
-let modalProgs = [];
-let realtimeSub = null;
-
-const $ = id => document.getElementById(id);
-
-// ── DB OPERATIONS ──────────────────────────────────────────────────
+// ── DB ────────────────────────────────────────────────────────────────
 async function loadProjects() {
   const sb = sbClient || initSupabase();
   if (!sb) {
-    // fallback: localStorage
     projects = JSON.parse(localStorage.getItem('cos_local') || '[]');
     renderSidebar();
     if (projects.length) selectProj(projects[0].id);
     return;
   }
   setSyncDot('syncing');
-  const {data, error} = await sb.from('projects').select('*').order('created_at', {ascending:false});
+  const { data, error } = await sb.from('projects').select('*').order('created_at', { ascending: false });
   setSyncDot('live');
-  if (error) { console.error(error); showToast('DB 로드 오류: '+error.message); return; }
-  projects = (data||[]).map(r => ({id:r.id, ...r.data, _updated: r.updated_at}));
+  if (error) { showToast('DB 로드 오류: ' + error.message); return; }
+  projects = (data || []).map(r => Object.assign({ id: r.id }, r.data));
   renderSidebar();
   if (projects.length && !curId) selectProj(projects[0].id);
   else if (curId) render();
@@ -487,52 +449,42 @@ async function loadProjects() {
 async function upsertProject(p) {
   const sb = sbClient || initSupabase();
   if (!sb) {
-    // localStorage fallback
-    const idx = projects.findIndex(x=>x.id===p.id);
-    if (idx>=0) projects[idx]=p; else projects.unshift(p);
+    const idx = projects.findIndex(x => x.id === p.id);
+    if (idx >= 0) projects[idx] = p; else projects.unshift(p);
     localStorage.setItem('cos_local', JSON.stringify(projects));
     return;
   }
   setSyncDot('syncing');
-  const {error} = await sb.from('projects').upsert({
-    id: p.id,
-    name: p.name,
-    data: p,
-    updated_at: new Date().toISOString(),
-  });
+  await sb.from('projects').upsert({ id: p.id, name: p.name, data: p, updated_at: new Date().toISOString() });
   setSyncDot('live');
-  if (error) showToast('저장 오류: '+error.message);
 }
 
 async function deleteProjectDB(id) {
   const sb = sbClient || initSupabase();
   if (!sb) {
-    projects = projects.filter(p=>p.id!==id);
+    projects = projects.filter(p => p.id !== id);
     localStorage.setItem('cos_local', JSON.stringify(projects));
     return;
   }
-  setSyncDot('syncing');
-  const {error} = await sb.from('projects').delete().eq('id', id);
-  setSyncDot('live');
-  if (error) showToast('삭제 오류: '+error.message);
+  await sb.from('projects').delete().eq('id', id);
 }
 
 function subscribeRealtime() {
   const sb = sbClient || initSupabase();
   if (!sb) return;
   if (realtimeSub) sb.removeChannel(realtimeSub);
-  realtimeSub = sb.channel('projects-changes')
-    .on('postgres_changes', {event:'*', schema:'public', table:'projects'}, payload => {
-      showToast('🔄 다른 사용자가 업데이트했습니다');
+  realtimeSub = sb.channel('proj-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+      showToast('다른 사용자가 업데이트했습니다');
       loadProjects();
     })
     .subscribe();
 }
 
-// ── SIDEBAR ────────────────────────────────────────────────────────
+// ── SIDEBAR ────────────────────────────────────────────────────────────
 function renderSidebar() {
   const list = $('plist');
-  $('pcnt').textContent = projects.length ? projects.length+'개' : '';
+  $('pcnt').textContent = projects.length ? projects.length + '개' : '';
   if (!projects.length) {
     list.innerHTML = '<div style="padding:12px 16px;font-size:12px;color:var(--g3)">—</div>';
     $('empty').classList.remove('hidden');
@@ -540,22 +492,21 @@ function renderSidebar() {
     return;
   }
   $('empty').classList.add('hidden');
-  list.innerHTML = projects.map(p => {
+  list.innerHTML = projects.map(function(p) {
     const days = daysLeft(p.deadline);
-    const bc = days===null?'db-ok':days<0?'db-danger':days<=7?'db-warn':'db-ok';
-    const bt = days===null?'—':days<0?'D+'+Math.abs(days):days===0?'D-Day':'D-'+days;
+    const bc = days === null ? 'db-ok' : days < 0 ? 'db-danger' : days <= 7 ? 'db-warn' : 'db-ok';
+    const bt = days === null ? '—' : days < 0 ? 'D+' + Math.abs(days) : days === 0 ? 'D-Day' : 'D-' + days;
     const pct = calcPct(p);
-    const act = p.id===curId?' active':'';
-    // 복제본 표시
-    const isDup = p.name && p.name.includes('[복제]');
-    return '<div class="pi'+act+'" onclick="selectProj(''+p.id+'')">'+
-      '<div class="pi-name">'+(isDup?'<span style="color:var(--g4);font-size:10px">↳ </span>':'')+p.name+'</div>'+
-      '<div class="pi-meta"><span class="db '+bc+'">'+bt+'</span><span class="dp">'+pct+'%</span></div>'+
+    const act = p.id === curId ? ' active' : '';
+    const dup = p.name && p.name.indexOf('[복제]') >= 0;
+    return '<div class="pi' + act + '" data-id="' + p.id + '" onclick="selectProj(this.dataset.id)">' +
+      '<div class="pi-name">' + (dup ? '<span style="color:var(--g4);font-size:10px">↳ </span>' : '') + p.name + '</div>' +
+      '<div class="pi-meta"><span class="db ' + bc + '">' + bt + '</span><span class="dp">' + pct + '%</span></div>' +
       '</div>';
   }).join('');
 }
 
-// ── DETAIL ─────────────────────────────────────────────────────────
+// ── DETAIL ────────────────────────────────────────────────────────────
 function selectProj(id) {
   curId = id; curStage = 0;
   renderSidebar();
@@ -565,408 +516,459 @@ function selectProj(id) {
 }
 
 function render() {
-  const p = projects.find(x => x.id === curId);
+  const p = projects.find(function(x) { return x.id === curId; });
   if (!p) return;
   const days = daysLeft(p.deadline);
-  const dc = days===null?'ok':days<0?'danger':days<=14?'warn':'ok';
-  const dt = days===null?'마감일 미설정':days<0?'마감 '+Math.abs(days)+'일 경과':days===0?'D-Day!':'D-'+days;
+  const dc = days === null ? 'ok' : days < 0 ? 'danger' : days <= 14 ? 'warn' : 'ok';
+  const dt = days === null ? '마감일 미설정' : days < 0 ? '마감 ' + Math.abs(days) + '일 경과' : days === 0 ? 'D-Day!' : 'D-' + days;
   const pct = calcPct(p);
-  const progs = p.programs||[];
+  const progs = p.programs || [];
   const sk = STAGES[curStage].key;
-  const checks = p.checklists?.[sk]||[];
-  const tasks = AI_TASKS[sk]||[];
+  const checks = (p.checklists && p.checklists[sk]) || [];
+  const tasks = AI_TASKS[sk] || [];
 
-  const tabs = STAGES.map((s,i)=>{
-    const items = p.checklists?.[s.key]||[];
-    const done = items.filter(x=>x.done).length;
+  const tabs = STAGES.map(function(s, i) {
+    const items = (p.checklists && p.checklists[s.key]) || [];
+    const done = items.filter(function(x) { return x.done; }).length;
     const all = items.length;
-    const cls = i===curStage?' active':(done===all&&all>0?' s-done':'');
-    return '<button class="stab'+cls+'" onclick="switchStage('+i+')">'+s.short+' '+s.label+(all?' ('+done+'/'+all+')':'')+'</button>';
+    const cls = i === curStage ? ' active' : (done === all && all > 0 ? ' s-done' : '');
+    return '<button class="stab' + cls + '" onclick="switchStage(' + i + ')">' + s.short + ' ' + s.label + (all ? ' (' + done + '/' + all + ')' : '') + '</button>';
   }).join('');
 
-  const checkHTML = checks.map((item,i)=>
-    '<div class="chk-item" onclick="toggleCheck(''+sk+'','+i+')">'+
-    '<div class="chkbox'+(item.done?' on':'')+'"></div>'+
-    '<div><div class="chk-txt'+(item.done?' done':'')+'">'+item.text+'</div>'+
-    (item.sub?'<div class="chk-sub">'+item.sub+'</div>':'')+
-    '</div></div>'
-  ).join('');
+  const checkHTML = checks.map(function(item, i) {
+    return '<div class="chk-item" data-sk="' + sk + '" data-idx="' + i + '" onclick="toggleCheck(this.dataset.sk, parseInt(this.dataset.idx))">' +
+      '<div class="chkbox' + (item.done ? ' on' : '') + '"></div>' +
+      '<div><div class="chk-txt' + (item.done ? ' done' : '') + '">' + item.text + '</div>' +
+      (item.sub ? '<div class="chk-sub">' + item.sub + '</div>' : '') +
+      '</div></div>';
+  }).join('');
 
-  const shortcutsHTML = tasks.map(t=>
-    '<button class="ai-sc" onclick="runTask(''+t.label.replace(/'/g,"\'")+'\',''+t.type+'',''+sk+'')">'+t.label+'</button>'
-  ).join('');
+  const shortcutsHTML = tasks.map(function(t) {
+    return '<button class="ai-sc" onclick="runTask(' + JSON.stringify(t.label) + ',' + JSON.stringify(t.type) + ',' + JSON.stringify(sk) + ')">' + t.label + '</button>';
+  }).join('');
 
-  const progHTML = progs.length ?
-    '<div class="section">'+
-    '<div class="sec-hdr"><div class="sec-ttl">요구 프로그램</div></div>'+
-    '<table class="prog-table"><thead><tr><th>대분류</th><th>프로그램</th><th>면적 (㎡)</th></tr></thead><tbody>'+
-    progs.map(pg=>'<tr><td style="color:var(--g5);font-size:12px">'+(pg.category||'—')+'</td><td>'+pg.name+'</td><td>'+(pg.area?pg.area.toLocaleString():'—')+'</td></tr>').join('')+
-    '</tbody></table>'+
-    '<div class="prog-total">합계 <span style="color:var(--red);font-weight:600;margin-left:8px">'+progs.reduce((s,x)=>s+(x.area||0),0).toLocaleString()+'</span> ㎡</div></div>' :
-    '<div class="section"><div class="sec-ttl" style="margin-bottom:10px">요구 프로그램</div>'+
-    '<div style="padding:16px;font-size:13px;color:var(--g4);border:1px solid var(--border);text-align:center">프로그램 정보 없음</div></div>';
+  const progHTML = progs.length
+    ? '<div class="section"><div class="sec-hdr"><div class="sec-ttl">요구 프로그램</div></div>' +
+      '<table class="prog-table"><thead><tr><th>대분류</th><th>프로그램</th><th>면적 (㎡)</th></tr></thead><tbody>' +
+      progs.map(function(pg) {
+        return '<tr><td style="color:var(--g5);font-size:12px">' + (pg.category || '—') + '</td><td>' + pg.name + '</td><td>' + (pg.area ? pg.area.toLocaleString() : '—') + '</td></tr>';
+      }).join('') +
+      '</tbody></table><div class="prog-total">합계 <span style="color:var(--red);font-weight:600;margin-left:8px">' +
+      progs.reduce(function(s, x) { return s + (x.area || 0); }, 0).toLocaleString() +
+      '</span> ㎡</div></div>'
+    : '<div class="section"><div class="sec-ttl" style="margin-bottom:10px">요구 프로그램</div>' +
+      '<div style="padding:16px;font-size:13px;color:var(--g4);border:1px solid var(--border);text-align:center">프로그램 정보 없음</div></div>';
+
+  const infoHTML =
+    (p.location ? '<div class="ic"><div class="ic-lbl">사이트 위치</div><div class="ic-val" style="font-size:12px">' + p.location + '</div></div>' : '') +
+    (p.siteArea ? '<div class="ic"><div class="ic-lbl">대지면적</div><div class="ic-val">' + p.siteArea + '</div></div>' : '') +
+    (p.usage ? '<div class="ic"><div class="ic-lbl">건축물 주 용도</div><div class="ic-val">' + p.usage + '</div></div>' : '') +
+    (p.area ? '<div class="ic"><div class="ic-lbl">연면적</div><div class="ic-val">' + p.area + '</div></div>' : '') +
+    (p.designFee ? '<div class="ic"><div class="ic-lbl">예정 설계비</div><div class="ic-val">' + p.designFee + '</div></div>' : '') +
+    (p.budget ? '<div class="ic"><div class="ic-lbl">예정 공사비</div><div class="ic-val">' + p.budget + '</div></div>' : '') +
+    (p.deliverables ? '<div class="ic" style="grid-column:span 2"><div class="ic-lbl">제출물 규격</div><div class="ic-val" style="font-size:12px">' + p.deliverables + '</div></div>' : '') +
+    (p.notes ? '<div class="ic" style="grid-column:span 2"><div class="ic-lbl">특이사항</div><div class="ic-val" style="font-size:12px">' + p.notes + '</div></div>' : '');
 
   $('detail').innerHTML =
-    '<div class="section">'+
-    '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">'+
-    '<div><div class="proj-title">'+p.name+'</div>'+
-    '<div class="proj-sub">'+(p.client||'발주처 미입력')+(p.location?' · '+p.location:'')+'</div></div>'+
-    '<div style="display:flex;gap:8px">'+
-    '<button class="btn btn-sm" onclick="duplicateProject(''+p.id+'')" title="프로젝트 복제">⧉ 복제</button>'+
-    '<button class="btn btn-danger btn-sm" onclick="deleteProj(''+p.id+'')">삭제</button>'+
-    '</div></div>'+
-    '<div class="tags">'+
-    (p.area?'<span class="tag tag-r">'+p.area+'</span>':'')+
-    (p.siteArea?'<span class="tag">대지 '+p.siteArea+'</span>':'')+
-    (p.budget?'<span class="tag tag-b">'+p.budget+'</span>':'')+
-    (p.designFee?'<span class="tag">설계비 '+p.designFee+'</span>':'')+
-    (p.usage?'<span class="tag">'+p.usage+'</span>':'')+
-    '</div></div>'+
+    '<div class="section">' +
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">' +
+    '<div><div class="proj-title">' + p.name + '</div>' +
+    '<div class="proj-sub">' + (p.client || '발주처 미입력') + (p.location ? ' · ' + p.location : '') + '</div></div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button class="btn btn-sm" onclick="duplicateProject(' + JSON.stringify(p.id) + ')">⧉ 복제</button>' +
+    '<button class="btn btn-danger btn-sm" onclick="deleteProj(' + JSON.stringify(p.id) + ')">삭제</button>' +
+    '</div></div>' +
+    '<div class="tags">' +
+    (p.area ? '<span class="tag tag-r">' + p.area + '</span>' : '') +
+    (p.siteArea ? '<span class="tag">대지 ' + p.siteArea + '</span>' : '') +
+    (p.budget ? '<span class="tag tag-b">' + p.budget + '</span>' : '') +
+    (p.usage ? '<span class="tag">' + p.usage + '</span>' : '') +
+    '</div></div>' +
 
-    '<div class="cd-bar section">'+
-    '<div class="cd-cell"><div class="cd-lbl">Deadline</div><div class="cd-val '+dc+'">'+dt+'</div></div>'+
-    '<div class="cd-cell" style="flex:2"><div class="cd-lbl">전체 진행률 — '+pct+'%</div><div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>'+
-    '<div class="cd-cell"><div class="cd-lbl">마감일</div><div style="font-size:13px;font-weight:600">'+(p.deadline?new Date(p.deadline).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}):'—')+'</div></div>'+
-    '</div>'+
+    '<div class="cd-bar section">' +
+    '<div class="cd-cell"><div class="cd-lbl">Deadline</div><div class="cd-val ' + dc + '">' + dt + '</div></div>' +
+    '<div class="cd-cell" style="flex:2"><div class="cd-lbl">전체 진행률 — ' + pct + '%</div><div class="prog-track"><div class="prog-fill" style="width:' + pct + '%"></div></div></div>' +
+    '<div class="cd-cell"><div class="cd-lbl">마감일</div><div style="font-size:13px;font-weight:600">' + (p.deadline ? new Date(p.deadline).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '—') + '</div></div>' +
+    '</div>' +
 
-    ((p.area||p.budget||p.deliverables||p.notes)?
-    '<div class="info-grid section">'+
-    (p.location?'<div class="ic"><div class="ic-lbl">사이트 위치</div><div class="ic-val" style="font-size:12px">'+p.location+'</div></div>':'')+
-    (p.siteArea?'<div class="ic"><div class="ic-lbl">대지면적</div><div class="ic-val">'+p.siteArea+'</div></div>':'')+
-    (p.usage?'<div class="ic"><div class="ic-lbl">건축물 주 용도</div><div class="ic-val">'+p.usage+'</div></div>':'')+
-    (p.area?'<div class="ic"><div class="ic-lbl">연면적</div><div class="ic-val">'+p.area+'</div></div>':'')+
-    (p.designFee?'<div class="ic"><div class="ic-lbl">예정 설계비</div><div class="ic-val">'+p.designFee+'</div></div>':'')+
-    (p.budget?'<div class="ic"><div class="ic-lbl">예정 공사비</div><div class="ic-val">'+p.budget+'</div></div>':'')+
-    (p.deliverables?'<div class="ic" style="grid-column:span 2"><div class="ic-lbl">제출물 규격</div><div class="ic-val" style="font-size:12px">'+p.deliverables+'</div></div>':'')+
-    (p.notes?'<div class="ic" style="grid-column:span 2"><div class="ic-lbl">특이사항</div><div class="ic-val" style="font-size:12px">'+p.notes+'</div></div>':'')+
-    '</div>':'') +
-
+    (infoHTML ? '<div class="info-grid section">' + infoHTML + '</div>' : '') +
     progHTML +
+    '<div class="stage-tabs">' + tabs + '</div>' +
 
-    '<div class="stage-tabs">'+tabs+'</div>'+
+    '<div class="ai-panel section">' +
+    '<div class="ai-ph"><div class="ai-pt">AI 업무 지원 <span class="ai-bw bg">Groq Llama</span> <span style="color:var(--g3);font-size:10px">→</span> <span class="ai-bw bc">분석·정제</span></div></div>' +
+    '<div class="ai-body">' +
+    '<div class="ai-desc">AI가 리서치·초안을 작성하고 건축 실무 관점으로 분석·정제합니다</div>' +
+    '<div class="ai-shortcuts">' + shortcutsHTML + '</div>' +
+    '<div class="ai-row">' +
+    '<input class="ai-inp" id="ai-inp" placeholder="직접 요청 입력 후 Enter..." />' +
+    '<select class="ai-sel" id="ai-sel"><option value="research">리서치</option><option value="casestudy">사례조사</option><option value="brainstorm">브레인스톰</option><option value="analysis">분석</option><option value="draft">초안작성</option></select>' +
+    '<button class="ai-run" id="ai-run-btn">▶ 실행</button>' +
+    '</div>' +
+    '<div class="ai-loading" id="ai-loading"><div class="spinner"></div><span id="ai-ltxt2">처리 중...</span></div>' +
+    '<div class="ai-out" id="ai-out">' +
+    '<div class="step-ind"><div class="sdot" id="sd1"></div><span class="slbl" id="sl1">① AI 리서치</span><span style="color:var(--g3)">→</span><div class="sdot" id="sd2"></div><span class="slbl" id="sl2">② AI 분석·정제</span></div>' +
+    '<div id="ai-inner"></div>' +
+    '</div>' +
+    '<span class="debug-toggle" onclick="toggleDebug()">🔧 디버그</span>' +
+    '<div class="debug-panel" id="debug-panel"></div>' +
+    '</div></div>' +
 
-    '<div class="ai-panel section">'+
-    '<div class="ai-ph"><div class="ai-pt">AI 업무 지원 <span class="ai-bw bg">Groq Llama</span> <span style="color:var(--g3);font-size:10px">→</span> <span class="ai-bw bc">분석·정제</span></div></div>'+
-    '<div class="ai-body">'+
-    '<div class="ai-desc">AI가 리서치·초안을 작성하고 건축 실무 관점으로 분석·정제합니다</div>'+
-    '<div class="ai-shortcuts">'+shortcutsHTML+'</div>'+
-    '<div class="ai-row">'+
-    '<input class="ai-inp" id="ai-inp" placeholder="직접 요청 입력 후 Enter..." onkeydown="if(event.key==='Enter')runCustom()"/>'+
-    '<select class="ai-sel" id="ai-sel"><option value="research">리서치</option><option value="casestudy">사례조사</option><option value="brainstorm">브레인스톰</option><option value="analysis">분석</option><option value="draft">초안작성</option></select>'+
-    '<button class="ai-run" onclick="runCustom()">▶ 실행</button>'+
-    '</div>'+
-    '<div class="ai-loading" id="ai-loading"><div class="spinner"></div><span id="ai-ltxt2">처리 중...</span></div>'+
-    '<div class="ai-out" id="ai-out">'+
-    '<div class="step-ind"><div class="sdot" id="sd1"></div><span class="slbl" id="sl1">① AI 리서치</span><span style="color:var(--g3)">→</span><div class="sdot" id="sd2"></div><span class="slbl" id="sl2">② AI 분석·정제</span></div>'+
-    '<div id="ai-inner"></div>'+
-    '</div>'+
-    '<span class="debug-toggle" onclick="toggleDebug()">🔧 디버그</span>'+
-    '<div class="debug-panel" id="debug-panel"></div>'+
-    '</div></div>'+
+    '<div class="section">' +
+    '<div class="sec-hdr"><div class="sec-ttl">' + STAGES[curStage].label + ' 체크리스트</div>' +
+    '<button class="btn btn-ghost btn-sm" onclick="addCheck(' + JSON.stringify(sk) + ')">+ 추가</button></div>' +
+    '<div class="chk-list">' + (checkHTML || '<div style="padding:12px 0;font-size:12px;color:var(--g4)">항목 없음</div>') + '</div>' +
+    '</div>' +
 
-    '<div class="section">'+
-    '<div class="sec-hdr"><div class="sec-ttl">'+STAGES[curStage].label+' 체크리스트</div>'+
-    '<button class="btn btn-ghost btn-sm" onclick="addCheck(''+sk+'')">+ 추가</button></div>'+
-    '<div class="chk-list">'+(checkHTML||'<div style="padding:12px 0;font-size:12px;color:var(--g4)">항목 없음</div>')+'</div>'+
-    '</div>'+
-
-    '<div class="section">'+
-    '<div class="sec-ttl" style="margin-bottom:10px">전략 메모</div>'+
-    '<textarea class="notes-area" id="snotes" placeholder="전략, 아이디어, AI 결과 요약..." onblur="saveNote(this.value)">'+(p.stageNotes?.[sk]||'')+'</textarea>'+
+    '<div class="section">' +
+    '<div class="sec-ttl" style="margin-bottom:10px">전략 메모</div>' +
+    '<textarea class="notes-area" id="snotes" placeholder="전략, 아이디어, AI 결과 요약...">' + ((p.stageNotes && p.stageNotes[sk]) || '') + '</textarea>' +
     '</div>';
+
+  // attach event listeners after render
+  const aiInp = $('ai-inp');
+  if (aiInp) aiInp.addEventListener('keydown', function(e) { if (e.key === 'Enter') runCustom(); });
+  const runBtn = $('ai-run-btn');
+  if (runBtn) runBtn.addEventListener('click', runCustom);
+  const notesEl = $('snotes');
+  if (notesEl) notesEl.addEventListener('blur', function() { saveNote(this.value); });
 }
 
-// ── DUPLICATE ──────────────────────────────────────────────────────
+// ── DUPLICATE ────────────────────────────────────────────────────────
 async function duplicateProject(id) {
-  const p = projects.find(x => x.id === id);
+  const p = projects.find(function(x) { return x.id === id; });
   if (!p) return;
   const newId = 'p_' + Date.now();
   const dup = JSON.parse(JSON.stringify(p));
   dup.id = newId;
   dup.name = '[복제] ' + p.name;
   dup.createdAt = new Date().toISOString();
-  projects.splice(projects.findIndex(x=>x.id===id)+1, 0, dup);
+  const idx = projects.findIndex(function(x) { return x.id === id; });
+  projects.splice(idx + 1, 0, dup);
   await upsertProject(dup);
   showToast('프로젝트가 복제됐습니다');
   renderSidebar();
   selectProj(newId);
 }
 
-// ── AI PIPELINE ────────────────────────────────────────────────────
+// ── AI ────────────────────────────────────────────────────────────────
 function buildCtx(p, sk) {
-  return '공모명: '+p.name+'\n발주처: '+(p.client||'—')+'\n위치: '+(p.location||'—')+'\n연면적: '+(p.area||'—')+'\n공사비: '+(p.budget||'—')+'\n마감일: '+(p.deadline||'—')+'\n현재단계: '+(STAGES.find(s=>s.key===sk)?.label||'—');
-}
-function gPrompt(label, type, ctx) {
-  const base = '아래는 건축 현상설계 공모 정보입니다:\n\n'+ctx+'\n\n';
-  const map = {
-    research: base+'[리서치] '+label+'\n\n최신 정보를 조사하고 구체적 사실·수치·사례를 포함해 정리하세요.',
-    casestudy: base+'[사례조사] '+label+'\n\n유사 국내외 건축 사례 3~5개를 조사해 각각 프로젝트명, 위치, 규모, 핵심 디자인 전략, 시사점을 정리하세요.',
-    brainstorm: base+'[브레인스톰] '+label+'\n\n창의적 아이디어를 다양하게 제안하세요.',
-    analysis: base+'[분석] '+label+'\n\n핵심 포인트, 주의사항, 전략적 판단 사항을 실무 관점에서 정리하세요.',
-    draft: base+'[초안 작성] '+label+'\n\n실제 제출에 활용 가능한 수준으로 구체적으로 작성하세요.',
-  };
-  return map[type]||map.analysis;
-}
-function cPrompt(label, ctx, gOut) {
-  return '당신은 건축 현상설계 전문 컨설턴트입니다.\n\n[공모 정보]\n'+ctx+'\n\n[AI 리서치·초안]\n'+gOut+'\n\n[요청]\n1. 건축 실무 관점에서 위 내용을 검토하고 보완점을 지적하세요\n2. "'+label+'"에 대해 실제 활용 가능한 최종 결과물을 정리하세요\n3. 이 공모의 경쟁력을 높이는 핵심 인사이트 1~2가지를 추가하세요\n\n간결하고 실용적으로. [섹션명] 형식으로 구분하세요.';
+  return '공모명: ' + p.name + '\n발주처: ' + (p.client || '—') + '\n위치: ' + (p.location || '—') +
+    '\n연면적: ' + (p.area || '—') + '\n공사비: ' + (p.budget || '—') +
+    '\n마감일: ' + (p.deadline || '—') + '\n현재단계: ' + (STAGES.find(function(s) { return s.key === sk; }) || {}).label;
 }
 
-async function runTask(label, type, sk) {
-  const p = projects.find(x=>x.id===curId);
-  await pipeline(label, type, buildCtx(p, sk));
+function gPrompt(label, type, ctx) {
+  const base = '아래는 건축 현상설계 공모 정보입니다:\n\n' + ctx + '\n\n';
+  const map = {
+    research:   base + '[리서치] ' + label + '\n\n최신 정보를 조사하고 구체적 사실·수치·사례를 포함해 정리하세요.',
+    casestudy:  base + '[사례조사] ' + label + '\n\n유사 국내외 건축 사례 3~5개를 조사해 각각 프로젝트명, 위치, 규모, 핵심 디자인 전략, 시사점을 정리하세요.',
+    brainstorm: base + '[브레인스톰] ' + label + '\n\n창의적 아이디어를 다양하게 제안하세요.',
+    analysis:   base + '[분석] ' + label + '\n\n핵심 포인트, 주의사항, 전략적 판단 사항을 실무 관점에서 정리하세요.',
+    draft:      base + '[초안 작성] ' + label + '\n\n실제 제출에 활용 가능한 수준으로 구체적으로 작성하세요.'
+  };
+  return map[type] || map.analysis;
 }
-async function runCustom() {
-  const input = $('ai-inp').value.trim(); if(!input) return;
-  const p = projects.find(x=>x.id===curId);
-  await pipeline(input, $('ai-sel').value, buildCtx(p, STAGES[curStage].key));
+
+function cPrompt(label, ctx, gOut) {
+  return '당신은 건축 현상설계 전문 컨설턴트입니다.\n\n[공모 정보]\n' + ctx +
+    '\n\n[AI 리서치·초안]\n' + gOut +
+    '\n\n[요청]\n1. 건축 실무 관점에서 위 내용을 검토하고 보완점을 지적하세요\n' +
+    '2. "' + label + '"에 대해 실제 활용 가능한 최종 결과물을 정리하세요\n' +
+    '3. 이 공모의 경쟁력을 높이는 핵심 인사이트 1~2가지를 추가하세요\n\n간결하고 실용적으로. [섹션명] 형식으로 구분하세요.';
 }
+
+function runTask(label, type, sk) {
+  const p = projects.find(function(x) { return x.id === curId; });
+  pipeline(label, type, buildCtx(p, sk));
+}
+
+function runCustom() {
+  const input = $('ai-inp').value.trim();
+  if (!input) return;
+  const p = projects.find(function(x) { return x.id === curId; });
+  pipeline(input, $('ai-sel').value, buildCtx(p, STAGES[curStage].key));
+}
+
 async function pipeline(label, type, ctx) {
   debugLog = '';
-  const loading=$('ai-loading'), out=$('ai-out'), inner=$('ai-inner');
-  const sd1=$('sd1'),sl1=$('sl1'),sd2=$('sd2'),sl2=$('sl2');
-  loading.classList.add('show'); out.classList.remove('show'); inner.innerHTML='';
+  const loading = $('ai-loading'), out = $('ai-out'), inner = $('ai-inner');
+  const sd1 = $('sd1'), sl1 = $('sl1'), sd2 = $('sd2'), sl2 = $('sl2');
+  loading.classList.add('show'); out.classList.remove('show'); inner.innerHTML = '';
+  $('ai-ltxt2').textContent = '① AI 리서치·초안 작성 중...';
+  sd1.className = 'sdot active'; sl1.className = 'slbl active'; sd2.className = 'sdot'; sl2.className = 'slbl';
 
-  $('ai-ltxt2').textContent='① AI 리서치·초안 작성 중...';
-  sd1.className='sdot active'; sl1.className='slbl active';
-  sd2.className='sdot'; sl2.className='slbl';
+  let gOut = '';
+  try { gOut = await callProxy('당신은 건축 현상설계 전문 리서처입니다. 한국어로 상세하게 답변하세요.', gPrompt(label, type, ctx)); }
+  catch(e) { gOut = '⚠ 리서치 오류: ' + e.message; }
 
-  let gOut='';
-  try { gOut = await callProxy('당신은 건축 현상설계 전문 리서처입니다. 한국어로 상세하게 답변하세요.', gPrompt(label,type,ctx)); }
-  catch(e) { gOut='⚠ 리서치 오류: '+e.message; dbg('[Step1] ERROR: '+e.message); }
+  $('ai-ltxt2').textContent = '② AI 분석·정제 중...';
+  sd1.className = 'sdot done'; sl1.className = 'slbl done'; sd2.className = 'sdot active'; sl2.className = 'slbl active';
 
-  $('ai-ltxt2').textContent='② AI 분석·정제 중...';
-  sd1.className='sdot done'; sl1.className='slbl done';
-  sd2.className='sdot active'; sl2.className='slbl active';
-
-  let cOut='';
-  try { cOut = await callProxy('당신은 건축 현상설계 전문 컨설턴트입니다. 실무 관점에서 분석하고 한국어로 답변하세요.', cPrompt(label,ctx,gOut)); }
-  catch(e) { cOut='⚠ 분석 오류: '+e.message; }
+  let cOut = '';
+  try { cOut = await callProxy('당신은 건축 현상설계 전문 컨설턴트입니다. 실무 관점에서 분석하고 한국어로 답변하세요.', cPrompt(label, ctx, gOut)); }
+  catch(e) { cOut = '⚠ 분석 오류: ' + e.message; }
 
   loading.classList.remove('show');
-  sd1.className='sdot done'; sl1.className='slbl done';
-  sd2.className='sdot done'; sl2.className='slbl done';
+  sd1.className = 'sdot done'; sl1.className = 'slbl done'; sd2.className = 'sdot done'; sl2.className = 'slbl done';
   out.classList.add('show');
   inner.innerHTML =
-    '<div class="ai-out-sec"><div class="ai-out-lbl g">① AI 리서치·초안</div><div class="ai-out-box">'+gOut+'</div></div>'+
-    '<div class="ai-out-sec"><div class="ai-out-lbl c">② AI 분석·정제</div><div class="ai-out-box cl">'+cOut+'</div></div>';
+    '<div class="ai-out-sec"><div class="ai-out-lbl g">① AI 리서치·초안</div><div class="ai-out-box">' + gOut + '</div></div>' +
+    '<div class="ai-out-sec"><div class="ai-out-lbl c">② AI 분석·정제</div><div class="ai-out-box cl">' + cOut + '</div></div>';
 }
 
-// ── FILE / ANALYZE ──────────────────────────────────────────────────
+// ── FILE HANDLING ────────────────────────────────────────────────────
 async function handleFile(event) {
-  const file = event.target.files[0]; if(!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const status = $('upload-status');
-  status.className='upload-status show';
-  status.innerHTML='<div class="spinner"></div> <span>'+file.name+' 읽는 중...</span>';
+  status.className = 'upload-status show';
+  status.innerHTML = '<div class="spinner"></div> <span>' + file.name + ' 읽는 중...</span>';
   try {
-    let text='';
-    if(file.name.endsWith('.pdf')) text = await extractPDF(file);
-    else if(file.name.endsWith('.docx')) text = await extractDOCX(file);
+    let text = '';
+    if (file.name.endsWith('.pdf')) text = await extractPDF(file);
+    else if (file.name.endsWith('.docx')) text = await extractDOCX(file);
     else throw new Error('PDF 또는 DOCX만 지원합니다.');
-    if(text.length<50) throw new Error('텍스트 추출 실패 (스캔 PDF일 수 있습니다)');
-    status.className='upload-status show ok';
-    status.innerHTML='✓ '+file.name+' ('+text.length.toLocaleString()+'자) — AI 분석 시작';
+    if (text.length < 50) throw new Error('텍스트 추출 실패');
+    status.className = 'upload-status show ok';
+    status.innerHTML = '✓ ' + file.name + ' (' + text.length.toLocaleString() + '자) — AI 분석 시작';
     await analyzeTextContent(text);
   } catch(e) {
-    status.className='upload-status show err';
-    status.innerHTML='✗ '+e.message;
+    status.className = 'upload-status show err';
+    status.innerHTML = '✗ ' + e.message;
   }
 }
+
 async function extractPDF(file) {
   const ab = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data:ab}).promise;
-  let text='';
-  for(let i=1;i<=Math.min(pdf.numPages,30);i++){
+  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  let text = '';
+  for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    text += content.items.map(x=>x.str).join(' ')+'
-';
+    text += content.items.map(function(x) { return x.str; }).join(' ') + '\n';
   }
   return text;
 }
+
 async function extractDOCX(file) {
   const ab = await file.arrayBuffer();
-  const result = await mammoth.extractRawText({arrayBuffer:ab});
+  const result = await mammoth.extractRawText({ arrayBuffer: ab });
   return result.value;
 }
-const EXTRACT_PROMPT = text =>
-  '다음은 건축 현상설계 공모 지침서입니다. 아래 JSON 형식으로만 응답하세요. JSON 외 텍스트는 절대 포함하지 마세요.\n\n{"name":"공모명","deadline":"YYYY-MM-DD","client":"발주처","location":"사이트 위치","site_area":"대지면적","usage":"건축물 주 용도","area":"연면적","design_fee":"예정 설계비","budget":"예정 공사비","deliverables":"제출물 규격","key_notes":"심사 특이사항","programs":[{"category":"대분류","name":"프로그램명","area":숫자}]}\n\n지침서:\n'+text.slice(0,12000);
+
+function extractPrompt(text) {
+  return '다음은 건축 현상설계 공모 지침서입니다. 아래 JSON 형식으로만 응답하세요. JSON 외 텍스트는 절대 포함하지 마세요.\n\n' +
+    '{"name":"공모명","deadline":"YYYY-MM-DD","client":"발주처","location":"사이트 위치","site_area":"대지면적","usage":"건축물 주 용도","area":"연면적","design_fee":"예정 설계비","budget":"예정 공사비","deliverables":"제출물 규격","key_notes":"심사 특이사항","programs":[{"category":"대분류","name":"프로그램명","area":숫자}]}\n\n지침서:\n' +
+    text.slice(0, 12000);
+}
 
 async function analyzeURL() {
-  const url=$('brief-url').value.trim(); if(!url){alert('URL을 입력해주세요.');return;}
-  setAL(true,'URL 페이지 분석 중...');
+  const url = $('brief-url').value.trim();
+  if (!url) { alert('URL을 입력해주세요.'); return; }
+  setAL(true, 'URL 페이지 분석 중...');
   try {
-    const raw = await callProxy('건축 현상설계 공모 정보 추출 전문가입니다. 요청한 JSON 형식으로만 응답하세요.',
-      'URL: '+url+'\n\n'+EXTRACT_PROMPT('[URL 페이지 분석]'));
+    const raw = await callProxy('건축 현상설계 공모 정보 추출 전문가입니다. 요청한 JSON 형식으로만 응답하세요.', 'URL: ' + url + '\n\n' + extractPrompt('[URL 페이지 분석]'));
     fillForm(raw);
   } catch(e) { alert(e.message); }
   setAL(false);
-}
-async function analyzeTextContent(text) {
-  setAL(true,'Gemini 분석 중...');
-  try {
-    const raw = await callProxy('건축 현상설계 공모 정보 추출 전문가입니다. 요청한 JSON 형식으로만 응답하세요.', EXTRACT_PROMPT(text));
-    fillForm(raw);
-  } catch(e) { alert(e.message); }
-  setAL(false);
-  const s=$('upload-status');
-  if(s.classList.contains('ok')) s.innerHTML=s.innerHTML.replace('— AI 분석 시작','— ✓ 완료');
-}
-function setAL(on,txt='') {
-  $('a-loading').classList.toggle('show',on);
-  if(txt) $('a-ltxt').textContent=txt;
-  $('btn-url').disabled=on;
-}
-function fillForm(raw) {
-  try {
-    const d=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    const set=(id,val)=>{if(val)$(id).value=val;};
-    set('f-name',d.name); set('f-deadline',d.deadline); set('f-client',d.client);
-    set('f-location',d.location); set('f-site-area',d.site_area);
-    set('f-usage',d.usage); set('f-area',d.area);
-    set('f-design-fee',d.design_fee); set('f-budget',d.budget);
-    set('f-deliverables',d.deliverables); set('f-notes',d.key_notes);
-    if(Array.isArray(d.programs)&&d.programs.length){
-      modalProgs=d.programs.map(p=>({category:p.category||'',name:p.name||'',area:Number(p.area)||0}));
-      renderModalProgs();
-    }
-    const prev=$('ai-prev');
-    prev.innerHTML=[
-      d.name&&'<div class="prev-row"><span class="prev-k">공모명</span><span class="prev-v">'+d.name+'</span></div>',
-      d.deadline&&'<div class="prev-row"><span class="prev-k">마감일</span><span class="prev-v">'+d.deadline+'</span></div>',
-      d.client&&'<div class="prev-row"><span class="prev-k">발주처</span><span class="prev-v">'+d.client+'</span></div>',
-      d.area&&'<div class="prev-row"><span class="prev-k">연면적</span><span class="prev-v">'+d.area+'</span></div>',
-      d.programs?.length&&'<div class="prev-row"><span class="prev-k">프로그램</span><span class="prev-v">'+d.programs.length+'개 추출됨</span></div>',
-    ].filter(Boolean).join('');
-    prev.classList.add('show');
-  } catch(e) { alert('파싱 오류: '+e.message+'\n\n수동 입력해주세요.'); }
 }
 
-// ── PROGRAM TABLE ──────────────────────────────────────────────────
+async function analyzeTextContent(text) {
+  setAL(true, 'AI 분석 중...');
+  try {
+    const raw = await callProxy('건축 현상설계 공모 정보 추출 전문가입니다. 요청한 JSON 형식으로만 응답하세요.', extractPrompt(text));
+    fillForm(raw);
+  } catch(e) { alert(e.message); }
+  setAL(false);
+  const s = $('upload-status');
+  if (s && s.classList.contains('ok')) s.innerHTML = s.innerHTML.replace('— AI 분석 시작', '— ✓ 완료');
+}
+
+function setAL(on, txt) {
+  $('a-loading').classList.toggle('show', on);
+  if (txt) $('a-ltxt').textContent = txt;
+  $('btn-url').disabled = on;
+}
+
+function fillForm(raw) {
+  try {
+    const d = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    function set(id, val) { if (val && $(id)) $(id).value = val; }
+    set('f-name', d.name); set('f-deadline', d.deadline); set('f-client', d.client);
+    set('f-location', d.location); set('f-site-area', d.site_area);
+    set('f-usage', d.usage); set('f-area', d.area);
+    set('f-design-fee', d.design_fee); set('f-budget', d.budget);
+    set('f-deliverables', d.deliverables); set('f-notes', d.key_notes);
+    if (Array.isArray(d.programs) && d.programs.length) {
+      modalProgs = d.programs.map(function(p) { return { category: p.category || '', name: p.name || '', area: Number(p.area) || 0 }; });
+      renderModalProgs();
+    }
+    const prev = $('ai-prev');
+    prev.innerHTML = [
+      d.name && '<div class="prev-row"><span class="prev-k">공모명</span><span class="prev-v">' + d.name + '</span></div>',
+      d.deadline && '<div class="prev-row"><span class="prev-k">마감일</span><span class="prev-v">' + d.deadline + '</span></div>',
+      d.client && '<div class="prev-row"><span class="prev-k">발주처</span><span class="prev-v">' + d.client + '</span></div>',
+      d.area && '<div class="prev-row"><span class="prev-k">연면적</span><span class="prev-v">' + d.area + '</span></div>',
+      (d.programs && d.programs.length) && '<div class="prev-row"><span class="prev-k">프로그램</span><span class="prev-v">' + d.programs.length + '개 추출됨</span></div>'
+    ].filter(Boolean).join('');
+    prev.classList.add('show');
+  } catch(e) { alert('파싱 오류: ' + e.message + '\n수동 입력해주세요.'); }
+}
+
+// ── PROGRAM TABLE ────────────────────────────────────────────────────
 function addProgItem() {
-  const cat=$('pi-cat').value.trim(), prog=$('pi-prog').value.trim(), area=parseFloat($('pi-area').value)||0;
-  if(!prog){alert('프로그램명을 입력해주세요.');return;}
-  modalProgs.push({category:cat,name:prog,area});
-  $('pi-cat').value='';$('pi-prog').value='';$('pi-area').value='';
+  const cat = $('pi-cat').value.trim(), prog = $('pi-prog').value.trim(), area = parseFloat($('pi-area').value) || 0;
+  if (!prog) { alert('프로그램명을 입력해주세요.'); return; }
+  modalProgs.push({ category: cat, name: prog, area: area });
+  $('pi-cat').value = ''; $('pi-prog').value = ''; $('pi-area').value = '';
   $('pi-prog').focus();
   renderModalProgs();
 }
-function deleteProgItem(i){modalProgs.splice(i,1);renderModalProgs();}
-function renderModalProgs(){
-  const table=$('prog-table'),tbody=$('prog-tbody'),total=$('prog-total'),sum=$('prog-sum');
-  if(!modalProgs.length){table.style.display='none';total.style.display='none';return;}
-  table.style.display='table';total.style.display='flex';
-  tbody.innerHTML=modalProgs.map((p,i)=>
-    '<tr><td style="color:var(--g5);font-size:12px">'+(p.category||'—')+'</td><td>'+p.name+'</td><td>'+(p.area?p.area.toLocaleString():'—')+'</td>'+
-    '<td><button class="del-btn" onclick="deleteProgItem('+i+')">×</button></td></tr>'
-  ).join('');
-  sum.textContent=modalProgs.reduce((s,p)=>s+(p.area||0),0).toLocaleString();
+
+function deleteProgItem(i) { modalProgs.splice(i, 1); renderModalProgs(); }
+
+function renderModalProgs() {
+  const table = $('prog-table'), tbody = $('prog-tbody'), total = $('prog-total'), sum = $('prog-sum');
+  if (!modalProgs.length) { table.style.display = 'none'; total.style.display = 'none'; return; }
+  table.style.display = 'table'; total.style.display = 'flex';
+  tbody.innerHTML = modalProgs.map(function(p, i) {
+    return '<tr><td style="color:var(--g5);font-size:12px">' + (p.category || '—') + '</td><td>' + p.name + '</td><td>' + (p.area ? p.area.toLocaleString() : '—') + '</td>' +
+      '<td><button class="del-btn" onclick="deleteProgItem(' + i + ')">×</button></td></tr>';
+  }).join('');
+  sum.textContent = modalProgs.reduce(function(s, p) { return s + (p.area || 0); }, 0).toLocaleString();
 }
 
-// ── CRUD ───────────────────────────────────────────────────────────
+// ── CRUD ──────────────────────────────────────────────────────────────
 async function saveProject() {
-  const name=$('f-name').value.trim(); if(!name){alert('공모명을 입력해주세요.');return;}
-  const id='p_'+Date.now();
-  const checklists={};
-  STAGES.forEach(s=>{checklists[s.key]=CHECKS[s.key].map(c=>({...c,done:false}));});
-  const p={id,name,deadline:$('f-deadline').value,client:$('f-client').value,
-    location:$('f-location').value,siteArea:$('f-site-area').value,
-    usage:$('f-usage').value,area:$('f-area').value,
-    designFee:$('f-design-fee').value,budget:$('f-budget').value,
-    deliverables:$('f-deliverables').value,notes:$('f-notes').value,
-    programs:[...modalProgs],checklists,stageNotes:{},createdAt:new Date().toISOString()};
+  const name = $('f-name').value.trim();
+  if (!name) { alert('공모명을 입력해주세요.'); return; }
+  const id = 'p_' + Date.now();
+  const checklists = {};
+  STAGES.forEach(function(s) { checklists[s.key] = CHECKS[s.key].map(function(c) { return Object.assign({}, c, { done: false }); }); });
+  const p = {
+    id: id, name: name, deadline: $('f-deadline').value, client: $('f-client').value,
+    location: $('f-location').value, siteArea: $('f-site-area').value, usage: $('f-usage').value,
+    area: $('f-area').value, designFee: $('f-design-fee').value, budget: $('f-budget').value,
+    deliverables: $('f-deliverables').value, notes: $('f-notes').value,
+    programs: modalProgs.slice(), checklists: checklists, stageNotes: {}, createdAt: new Date().toISOString()
+  };
   projects.unshift(p);
   await upsertProject(p);
   closeAdd(); renderSidebar(); selectProj(id);
   showToast('프로젝트가 생성됐습니다');
 }
 
-async function toggleCheck(sk,i) {
-  const p=projects.find(x=>x.id===curId); if(!p?.checklists?.[sk]) return;
-  p.checklists[sk][i].done=!p.checklists[sk][i].done;
+async function toggleCheck(sk, i) {
+  const p = projects.find(function(x) { return x.id === curId; });
+  if (!p || !p.checklists || !p.checklists[sk]) return;
+  p.checklists[sk][i].done = !p.checklists[sk][i].done;
   await upsertProject(p); render(); renderSidebar();
 }
+
 async function addCheck(sk) {
-  const t=prompt('새 체크리스트 항목:'); if(!t) return;
-  const p=projects.find(x=>x.id===curId);
-  p.checklists[sk].push({text:t,sub:'',done:false});
+  const t = prompt('새 체크리스트 항목:'); if (!t) return;
+  const p = projects.find(function(x) { return x.id === curId; });
+  p.checklists[sk].push({ text: t, sub: '', done: false });
   await upsertProject(p); render();
 }
+
 async function saveNote(val) {
-  const p=projects.find(x=>x.id===curId); if(!p) return;
-  if(!p.stageNotes)p.stageNotes={};
-  p.stageNotes[STAGES[curStage].key]=val;
+  const p = projects.find(function(x) { return x.id === curId; }); if (!p) return;
+  if (!p.stageNotes) p.stageNotes = {};
+  p.stageNotes[STAGES[curStage].key] = val;
   await upsertProject(p);
 }
-function switchStage(i){curStage=i;render();}
+
+function switchStage(i) { curStage = i; render(); }
+
 async function deleteProj(id) {
-  if(!confirm('삭제하시겠습니까?'))return;
+  if (!confirm('삭제하시겠습니까?')) return;
   await deleteProjectDB(id);
-  projects=projects.filter(p=>p.id!==id);
-  curId=null; $('detail').classList.add('hidden');
+  projects = projects.filter(function(p) { return p.id !== id; });
+  curId = null; $('detail').classList.add('hidden');
   renderSidebar(); showToast('삭제됐습니다');
 }
 
-// ── HELPERS ────────────────────────────────────────────────────────
-function daysLeft(d){if(!d)return null;return Math.ceil((new Date(d)-new Date())/86400000);}
-function calcPct(p){let t=0,d=0;STAGES.forEach(s=>{const it=p.checklists?.[s.key]||[];t+=it.length;d+=it.filter(i=>i.done).length;});return t?Math.round(d/t*100):0;}
-function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-let debugLog='';
-function dbg(msg){const ts=new Date().toLocaleTimeString('ko-KR',{hour12:false});debugLog+='['+ts+'] '+msg+'\n';const el=$('debug-panel');if(el){el.textContent=debugLog;el.scrollTop=el.scrollHeight;}}
-function toggleDebug(){const el=$('debug-panel');if(el)el.classList.toggle('show');}
+// ── HELPERS ────────────────────────────────────────────────────────────
+function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - new Date()) / 86400000); }
+function calcPct(p) {
+  let t = 0, d = 0;
+  STAGES.forEach(function(s) { const it = (p.checklists && p.checklists[s.key]) || []; t += it.length; d += it.filter(function(i) { return i.done; }).length; });
+  return t ? Math.round(d / t * 100) : 0;
+}
+function showToast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 2500); }
+function dbg(msg) { const ts = new Date().toLocaleTimeString('ko-KR', { hour12: false }); debugLog += '[' + ts + '] ' + msg + '\n'; const el = $('debug-panel'); if (el) { el.textContent = debugLog; el.scrollTop = el.scrollHeight; } }
+function toggleDebug() { const el = $('debug-panel'); if (el) el.classList.toggle('show'); }
 
-// ── MODAL / DRAWER ──────────────────────────────────────────────────
-function openAdd(){
-  modalProgs=[];
+// ── MODAL / DRAWER ────────────────────────────────────────────────────
+function openAdd() {
+  modalProgs = [];
   $('add-modal').classList.add('open');
-  ['f-name','f-deadline','f-client','f-location','f-site-area','f-usage','f-area','f-design-fee','f-budget','f-deliverables','f-notes','brief-url','pi-cat','pi-prog','pi-area'].forEach(id=>{$(id).value='';});
-  $('brief-file').value='';
+  ['f-name','f-deadline','f-client','f-location','f-site-area','f-usage','f-area','f-design-fee','f-budget','f-deliverables','f-notes','brief-url','pi-cat','pi-prog','pi-area'].forEach(function(id) { $(id).value = ''; });
+  $('brief-file').value = '';
   $('ai-prev').classList.remove('show');
-  $('upload-status').className='upload-status';
+  $('upload-status').className = 'upload-status';
   renderModalProgs();
 }
-function closeAdd(){$('add-modal').classList.remove('open');}
-function toggleDrawer(){$('drawer').classList.toggle('open');const el=$('sb-key-inp');if(el)el.value=getSbKey();}
-function saveKey(){const v=$('sb-key-inp').value.trim();if(v)localStorage.setItem('sb_key',v);sbClient=null;initSupabase();subscribeRealtime();loadProjects();alert('저장됐습니다.');$('drawer').classList.remove('open');}
-
-async function testConn(){
-  const el=$('test-result');el.style.display='block';el.style.borderColor='var(--g3)';el.style.color='var(--g5)';el.textContent='테스트 중...';
-  try{
-    const r=await callProxy('건축 AI 어시스턴트입니다.','안녕하세요. "연결 성공"이라고만 짧게 답해주세요.');
-    el.style.borderColor='#16a34a';el.style.color='#16a34a';el.style.background='#f0fdf4';
-    el.textContent='✓ 연결 성공!\n'+r.slice(0,100);
-  }catch(e){el.style.borderColor='var(--red)';el.style.color='var(--red)';el.style.background='var(--red-l)';el.textContent='✗ 실패\n'+e.message;}
+function closeAdd() { $('add-modal').classList.remove('open'); }
+function toggleDrawer() { $('drawer').classList.toggle('open'); const el = $('sb-key-inp'); if (el) el.value = getSbKey(); }
+function saveKey() {
+  const v = $('sb-key-inp').value.trim();
+  if (v) localStorage.setItem('sb_key', v);
+  sbClient = null; initSupabase(); subscribeRealtime(); loadProjects();
+  alert('저장됐습니다.');
+  $('drawer').classList.remove('open');
+}
+async function testConn() {
+  const el = $('test-result');
+  el.style.display = 'block'; el.style.borderColor = 'var(--g3)'; el.style.color = 'var(--g5)'; el.textContent = '테스트 중...';
+  try {
+    const r = await callProxy('건축 AI 어시스턴트입니다.', '안녕하세요. 연결 성공이라고만 짧게 답해주세요.');
+    el.style.borderColor = '#16a34a'; el.style.color = '#16a34a'; el.style.background = '#f0fdf4';
+    el.textContent = '✓ 연결 성공!\n' + r.slice(0, 100);
+  } catch(e) {
+    el.style.borderColor = 'var(--red)'; el.style.color = 'var(--red)'; el.style.background = 'var(--red-l)';
+    el.textContent = '✗ 실패\n' + e.message;
+  }
 }
 
-// ── EXPORT / IMPORT ────────────────────────────────────────────────
-function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(projects,null,2)],{type:'application/json'}));a.download='competition_'+new Date().toISOString().slice(0,10)+'.json';a.click();}
-async function importData(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=async ev=>{
-    try{
-      const d=JSON.parse(ev.target.result);
-      if(Array.isArray(d)){
-        for(const p of d){projects.unshift(p);await upsertProject(p);}
-        renderSidebar();showToast(d.length+'개 가져왔습니다.');
+// ── EXPORT / IMPORT ────────────────────────────────────────────────────
+function exportData() {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(projects, null, 2)], { type: 'application/json' }));
+  a.download = 'competition_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+}
+async function importData(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = async function(ev) {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (Array.isArray(d)) {
+        for (const p of d) { projects.unshift(p); await upsertProject(p); }
+        renderSidebar(); showToast(d.length + '개 가져왔습니다.');
       }
-    }catch{alert('파일 오류');}
-  };r.readAsText(f);
+    } catch(err) { alert('파일 오류'); }
+  };
+  r.readAsText(f);
 }
-async function clearAll(){
-  if(!confirm('모두 삭제?'))return;
-  const sb=sbClient||initSupabase();
-  if(sb){for(const p of projects)await sb.from('projects').delete().eq('id',p.id);}
-  projects=[];curId=null;$('detail').classList.add('hidden');renderSidebar();showToast('초기화됐습니다.');
+async function clearAll() {
+  if (!confirm('모두 삭제?')) return;
+  const sb = sbClient || initSupabase();
+  if (sb) { for (const p of projects) await sb.from('projects').delete().eq('id', p.id); }
+  projects = []; curId = null; $('detail').classList.add('hidden');
+  renderSidebar(); showToast('초기화됐습니다.');
 }
 
-// ── ENTER KEY FOR PROG INPUT ────────────────────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
-  const ai=$('pi-area');if(ai)ai.addEventListener('keydown',e=>{if(e.key==='Enter')addProgItem();});
-  const pi=$('pi-prog');if(pi)pi.addEventListener('keydown',e=>{if(e.key==='Enter')$('pi-area').focus();});
+// ── ENTER KEY ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const ai = $('pi-area'); if (ai) ai.addEventListener('keydown', function(e) { if (e.key === 'Enter') addProgItem(); });
+  const pi = $('pi-prog'); if (pi) pi.addEventListener('keydown', function(e) { if (e.key === 'Enter') $('pi-area').focus(); });
 });
 
-// ── INIT ───────────────────────────────────────────────────────────
-(async()=>{
+// ── INIT ──────────────────────────────────────────────────────────────
+(async function() {
   initSupabase();
   await loadProjects();
   subscribeRealtime();
