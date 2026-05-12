@@ -258,9 +258,9 @@ button{cursor:pointer;}
 <div class="drawer" id="drawer">
   <div class="drw-ttl">설정</div>
   <div class="field">
-    <label>Gemini API 키</label>
-    <input type="password" id="gkey-inp" placeholder="AIza..." />
-    <div style="font-family:var(--mono);font-size:10px;color:var(--g4);margin-top:5px">Google AI Studio 발급 · localStorage 저장</div>
+    <label>Supabase Publishable Key</label>
+    <input type="password" id="sb-key-inp" placeholder="sb_publishable_..." />
+    <div style="font-family:var(--mono);font-size:10px;color:var(--g4);margin-top:5px">Supabase → Settings → API Keys · localStorage 저장</div>
   </div>
   <button class="btn btn-p" style="width:100%;margin-bottom:8px" onclick="saveKey()">저장</button>
   <button class="btn btn-sm" style="width:100%;margin-bottom:20px;font-family:var(--mono);font-size:11px" onclick="testGemini()">⚡ Gemini 연결 테스트</button>
@@ -365,8 +365,6 @@ if (typeof pdfjsLib !== 'undefined') {
 }
 
 // ── CONFIG ─────────────────────────────────────────────────────────
-const GEMINI_KEY_DEFAULT = 'AIzaSyDXKPWm0C3uSa7NQWjSYz8YU30CYMeeYZQ';
-
 const STAGES = [
   {key:'strategy', label:'전략·리서치', short:'01'},
   {key:'concept',  label:'분석·컨셉',   short:'02'},
@@ -452,48 +450,43 @@ let curId = null, curStage = 0;
 let modalProgs = []; // 모달에서 입력 중인 프로그램 목록
 
 const save = () => localStorage.setItem('cos_v3', JSON.stringify(projects));
-const getKey = () => localStorage.getItem('gemini_key') || GEMINI_KEY_DEFAULT;
+const EDGE_FN_URL = 'https://uugexirglklppgvdvwxn.supabase.co/functions/v1/claude-proxy';
+const getSbKey = () => localStorage.getItem('sb_key') || '';
+
+async function callProxy(system, user) {
+  const key = getSbKey();
+  if (!key) throw new Error('Supabase Publishable Key가 없습니다. 설정에서 입력해주세요.');
+  dbg('[Proxy] calling Edge Function...');
+  const res = await fetch(EDGE_FN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': key,
+      'Authorization': 'Bearer ' + key,
+    },
+    body: JSON.stringify({ system, user }),
+  });
+  const data = await res.json();
+  dbg('[Proxy] status: ' + res.status);
+  if (!res.ok) throw new Error('Edge Function 오류 (' + res.status + '): ' + JSON.stringify(data));
+  if (data.error) throw new Error('AI 오류: ' + data.error);
+  dbg('[Proxy] OK, ' + (data.text||'').length + '자');
+  return data.text || '';
+}
 const $ = id => document.getElementById(id);
 
 // ── GEMINI API ─────────────────────────────────────────────────────
-async function geminiCall(prompt, useSearch = false) {
-  const key = getKey();
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`;
-  const body = { contents: [{ parts: [{ text: prompt }] }] };
-  if (useSearch) body.tools = [{ googleSearch: {} }];
-
-  dbg(`[Gemini] calling... useSearch=${useSearch}`);
-  dbg(`[Gemini] URL: ${url.replace(key, key.slice(0,8)+'...')}`);
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  const data = await res.json();
-  dbg(`[Gemini] status: ${res.status}`);
-
-  if (!res.ok) {
-    const msg = data.error?.message || JSON.stringify(data);
-    dbg(`[Gemini] ERROR: ${msg}`);
-    throw new Error(`Gemini API 오류 (${res.status}): ${msg}`);
-  }
-
-  const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
-  dbg(`[Gemini] OK, ${text.length}자 응답`);
-  return text;
-}
+// geminiCall removed - using callProxy via Supabase Edge Function
 
 // Gemini 연결 테스트
-async function testGemini() {
+async function testConnection() {
   const el = $('gtest-result');
   el.style.display = 'block';
   el.style.borderColor = 'var(--g3)';
   el.style.color = 'var(--g5)';
   el.textContent = '테스트 중...';
   try {
-    const result = await geminiCall('안녕하세요. "연결 성공"이라고만 짧게 답해주세요.');
+    const result = await callProxy('건축 현상설계 AI 어시스턴트입니다.', '안녕하세요. 연결 성공이라고만 짧게 답해주세요.');
     el.style.borderColor = '#16a34a';
     el.style.color = '#16a34a';
     el.style.background = '#f0fdf4';
@@ -584,9 +577,9 @@ async function analyzeURL() {
   if (!url) { alert('공모 페이지 URL을 입력해주세요.'); return; }
   setALoading(true, 'URL 페이지 분석 중...');
   try {
-    const raw = await geminiCall(
-      `다음 URL의 건축 현상설계 공모 페이지를 분석해서 공모 정보를 추출하세요.\nURL: ${url}\n\n${EXTRACT_PROMPT('[URL 페이지에서 공모 정보 추출]')}`,
-      true
+    const raw = await callProxy(
+      '당신은 건축 현상설계 공모 정보 추출 전문가입니다. 요청한 JSON 형식으로만 응답하세요.',
+      `다음 URL의 건축 현상설계 공모 페이지를 분석해서 공모 정보를 추출하세요.\nURL: ${url}\n\n${EXTRACT_PROMPT('[URL 페이지에서 공모 정보 추출]')}`
     );
     fillForm(raw);
   } catch(e) {
@@ -598,7 +591,10 @@ async function analyzeURL() {
 async function analyzeText(text) {
   setALoading(true, 'Gemini가 지침서 분석 중...');
   try {
-    const raw = await geminiCall(EXTRACT_PROMPT(text));
+    const raw = await callProxy(
+      '당신은 건축 현상설계 공모 정보 추출 전문가입니다. 요청한 JSON 형식으로만 응답하세요.',
+      EXTRACT_PROMPT(text)
+    );
     fillForm(raw);
   } catch(e) {
     alert(e.message);
@@ -886,10 +882,10 @@ function render() {
     <!-- AI PANEL -->
     <div class="ai-panel section">
       <div class="ai-ph">
-        <div class="ai-pt">AI 업무 지원 <span class="ai-bw bg">Gemini</span> <span style="color:var(--g3);font-size:10px">→</span> <span class="ai-bw bc">Claude</span></div>
+        <div class="ai-pt">AI 업무 지원 <span class="ai-bw bg">Groq Llama 4</span> <span style="color:var(--g3);font-size:10px">→</span> <span class="ai-bw bc">분석·정제</span></div>
       </div>
       <div class="ai-body">
-        <div class="ai-desc">Gemini가 인터넷을 조사해 초안을 작성하고, Claude가 건축 실무 관점으로 분석·정제합니다</div>
+        <div class="ai-desc">AI가 리서치·초안을 작성하고 건축 실무 관점으로 분석·정제합니다</div>
         <div class="ai-shortcuts">${shortcutsHTML}</div>
         <div class="ai-row">
           <input class="ai-inp" id="ai-inp" placeholder="직접 요청 입력 후 Enter..." onkeydown="if(event.key==='Enter')runCustom()" />
@@ -905,9 +901,9 @@ function render() {
         <div class="ai-loading" id="ai-loading"><div class="spinner"></div><span id="ai-ltxt">처리 중...</span></div>
         <div class="ai-out" id="ai-out">
           <div class="step-ind">
-            <div class="sdot" id="sd1"></div><span class="slbl" id="sl1">① Gemini 조사</span>
+            <div class="sdot" id="sd1"></div><span class="slbl" id="sl1">① AI 리서치</span>
             <span style="color:var(--g3)">→</span>
-            <div class="sdot" id="sd2"></div><span class="slbl" id="sl2">② Claude 분석</span>
+            <div class="sdot" id="sd2"></div><span class="slbl" id="sl2">② AI 분석·정제</span>
           </div>
           <div id="ai-inner"></div>
         </div>
@@ -1006,52 +1002,35 @@ async function pipeline(label, type, ctx) {
   inner.innerHTML = '';
 
   // Step 1: Gemini
-  ltxt.textContent = '① Gemini 조사·초안 작성 중...';
+  ltxt.textContent = '① AI 리서치·초안 작성 중...';
   sd1.className='sdot active'; sl1.className='slbl active';
   sd2.className='sdot'; sl2.className='slbl';
 
   let gOut = '';
   try {
-    gOut = await geminiCall(gPrompt(label, type, ctx), true);
-  } catch(e) {
-    // retry without search
-    try {
-      dbg('[Gemini] 검색 없이 재시도...');
-      gOut = await geminiCall(gPrompt(label, type, ctx), false);
-    } catch(e2) {
-      gOut = `⚠ Gemini 오류: ${e2.message}`;
-    }
-  }
+    dbg('[Step1] AI 리서치·초안 요청...');
+    gOut = await callProxy(
+      '당신은 건축 현상설계 전문 리서처입니다. 한국어로 상세하게 답변하세요.',
+      gPrompt(label, type, ctx)
+    );
+  } catch(e) { gOut = '⚠ 리서치 오류: ' + e.message; }
 
   // Step 2: Claude
-  ltxt.textContent = '② Claude 분석·정제 중...';
+  ltxt.textContent = '② AI 분석·정제 중...';
   sd1.className='sdot done'; sl1.className='slbl done';
   sd2.className='sdot active'; sl2.className='slbl active';
 
   let cOut = '';
   try {
-    dbg('[Claude] calling Anthropic API...');
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{role:'user',content:cPrompt(label,ctx,gOut)}]
-      })
-    });
-    dbg(`[Claude] status: ${res.status}`);
-    const d = await res.json();
-    if (res.ok) {
-      cOut = d.content?.map(b=>b.text||'').join('') || '응답 없음';
-      dbg(`[Claude] OK, ${cOut.length}자`);
-    } else {
-      cOut = `⚠ Claude 오류 (${res.status}): ${d.error?.message||JSON.stringify(d)}`;
-      dbg(`[Claude] ERROR: ${cOut}`);
-    }
+    dbg('[Step2] 분석·정제 요청...');
+    cOut = await callProxy(
+      '당신은 건축 현상설계 전문 컨설턴트입니다. 실무 관점에서 분석하고 한국어로 답변하세요.',
+      cPrompt(label, ctx, gOut)
+    );
+    dbg('[Step2] OK, ' + cOut.length + '자');
   } catch(e) {
-    cOut = `⚠ Claude 연결 오류: ${e.message}`;
-    dbg(`[Claude] EXCEPTION: ${e.message}`);
+    cOut = '⚠ 분석 오류: ' + e.message;
+    dbg('[Step2] ERROR: ' + e.message);
   }
 
   loading.classList.remove('show');
@@ -1061,11 +1040,11 @@ async function pipeline(label, type, ctx) {
 
   inner.innerHTML = `
     <div class="ai-out-sec">
-      <div class="ai-out-lbl g">① Gemini — 조사·초안</div>
+      <div class="ai-out-lbl g">① AI 리서치·초안</div>
       <div class="ai-out-box">${gOut}</div>
     </div>
     <div class="ai-out-sec">
-      <div class="ai-out-lbl c">② Claude — 분석·정제</div>
+      <div class="ai-out-lbl c">② AI 분석·정제</div>
       <div class="ai-out-box cl">${cOut}</div>
     </div>`;
 }
@@ -1115,8 +1094,12 @@ function openAdd(){
 function closeAdd(){ $('add-modal').classList.remove('open'); }
 
 // ── DRAWER ─────────────────────────────────────────────────────────
-function toggleDrawer(){ $('drawer').classList.toggle('open'); $('gkey-inp').value=getKey(); }
-function saveKey(){ localStorage.setItem('gemini_key',$('gkey-inp').value.trim()); alert('저장됐습니다.'); }
+function toggleDrawer(){ $('drawer').classList.toggle('open'); const el=$('sb-key-inp'); if(el) el.value=getSbKey(); }
+function saveKey(){
+  const v = $('sb-key-inp').value.trim();
+  if(v) localStorage.setItem('sb_key', v);
+  alert('저장됐습니다.');
+}
 
 // ── EXPORT / IMPORT ────────────────────────────────────────────────
 function exportData(){ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(projects,null,2)],{type:'application/json'}));a.download=`competition_${new Date().toISOString().slice(0,10)}.json`;a.click(); }
