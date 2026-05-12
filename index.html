@@ -352,7 +352,7 @@ async function callProxy(system, user) {
   dbg('[Proxy] calling...');
   const res = await fetch(EDGE_FN_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'apikey': key },
+    headers: { 'Content-Type': 'application/json', 'apikey': key, 'Authorization': 'Bearer ' + key },
     body: JSON.stringify({ system: system, user: user })
   });
   const data = await res.json();
