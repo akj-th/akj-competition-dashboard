@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>현상설계 OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #e60235;
+  --red-light: #fff0f3;
+  --red-mid: #ffd6df;
+  --red-dark: #b50029;
+  --black: #111111;
+  --gray-900: #1a1a1a;
+  --gray-700: #444;
+  --gray-500: #777;
+  --gray-400: #999;
+  --gray-300: #ccc;
+  --gray-200: #e0e0e0;
+  --gray-100: #f4f4f4;
+  --gray-50: #fafafa;
+  --white: #ffffff;
+  --border: #e8e8e8;
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.10);
+  --font-sans: 'Noto Sans KR', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --sidebar-w: 260px;
+  --header-h: 56px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: var(--font-sans); background: var(--white); color: var(--black); font-size: 14px; line-height: 1.6; }
+button { font-family: var(--font-sans); cursor: pointer; }
+input, textarea, select { font-family: var(--font-sans); color: var(--black); }
+
+/* ── HEADER ── */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+  background: var(--white); border-bottom: 2px solid var(--red);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; z-index: 200;
+}
+.header-logo {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
+  color: var(--black);
+}
+.logo-mark {
+  width: 30px; height: 30px; background: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+}
+.header-right { display: flex; align-items: center; gap: 8px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 15px; font-size: 13px; font-weight: 400;
+  border: 1px solid var(--border); background: var(--white);
+  color: var(--gray-700); transition: all 0.13s; white-space: nowrap; cursor: pointer;
+}
+.btn:hover { border-color: var(--gray-300); background: var(--gray-50); }
+.btn-primary { background: var(--red); border-color: var(--red); color: white; font-weight: 500; }
+.btn-primary:hover { background: var(--red-dark); border-color: var(--red-dark); }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: var(--gray-100); }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-danger { border-color: var(--red); color: var(--red); background: white; }
+.btn-danger:hover { background: var(--red-light); }
+
+/* ── LAYOUT ── */
+.app { display: flex; padding-top: var(--header-h); min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  position: fixed; top: var(--header-h); bottom: 0; left: 0;
+  overflow-y: auto; background: var(--gray-50);
+}
+.sidebar-top { padding: 20px 16px 8px; }
+.sidebar-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
+.proj-item { padding: 11px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.12s; }
+.proj-item:hover { background: var(--white); border-left-color: var(--gray-200); }
+.proj-item.active { background: var(--white); border-left-color: var(--red); }
+.proj-item-name { font-size: 13px; font-weight: 400; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj-item-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.d-badge { font-family: var(--font-mono); font-size: 10px; padding: 1px 7px; border: 1px solid; }
+.d-ok { border-color: var(--gray-300); color: var(--gray-500); }
+.d-warn { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
+.d-danger { border-color: var(--red); color: var(--red); background: var(--red-light); }
+.d-pct { font-family: var(--font-mono); font-size: 10px; color: var(--gray-400); }
+
+/* ── MAIN CONTENT ── */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px; min-height: calc(100vh - var(--header-h)); }
+
+/* ── EMPTY ── */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; gap: 14px; text-align: center; }
+.empty-icon { width: 48px; height: 48px; border: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+.empty-icon::before { content: '+'; font-size: 24px; color: var(--gray-300); }
+.empty-text { font-size: 13px; color: var(--gray-400); }
+
+/* ── PROJECT DETAIL ── */
+.proj-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+.proj-sub { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+.tag { font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; border: 1px solid var(--border); color: var(--gray-700); }
+.tag-red { border-color: var(--red); color: var(--red); background: var(--red-light); }
+.tag-blue { border-color: #3b82f6; color: #2563eb; background: #eff6ff; }
+
+/* ── COUNTDOWN BAR ── */
+.countdown-bar {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--border); margin-bottom: 32px; background: var(--white);
+}
+.cd-cell { padding: 16px 24px; flex: 1; }
+.cd-cell + .cd-cell { border-left: 1px solid var(--border); }
+.cd-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 5px; }
+.cd-value { font-family: var(--font-mono); font-size: 24px; font-weight: 500; }
+.cd-value.ok { color: #16a34a; }
+.cd-value.warn { color: #d97706; }
+.cd-value.danger { color: var(--red); }
+.progress-track { height: 3px; background: var(--gray-100); margin-top: 10px; }
+.progress-fill { height: 100%; background: var(--red); transition: width 0.4s ease; }
+
+/* ── INFO GRID ── */
+.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); border: 1px solid var(--border); margin-bottom: 32px; }
+.info-cell { padding: 14px 16px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.info-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 5px; }
+.info-value { font-size: 13px; font-weight: 500; line-height: 1.5; }
+
+/* ── STAGE TABS ── */
+.stage-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; overflow-x: auto; }
+.stage-tab {
+  padding: 10px 18px; font-size: 11px; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
+  border: none; background: none; color: var(--gray-400); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all 0.12s;
+}
+.stage-tab:hover { color: var(--black); }
+.stage-tab.active { color: var(--red); border-bottom-color: var(--red); font-weight: 500; }
+.stage-tab.s-done { color: var(--gray-300); }
+
+/* ── AI PANEL ── */
+.ai-panel { border: 1px solid var(--border); margin-bottom: 32px; }
+.ai-panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px; background: var(--gray-50); border-bottom: 1px solid var(--border);
+}
+.ai-panel-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
+.ai-badge { font-size: 10px; padding: 2px 7px; font-weight: 500; font-family: var(--font-mono); }
+.badge-g { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+.badge-c { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); }
+.ai-body { padding: 16px; }
+.ai-desc { font-size: 12px; color: var(--gray-500); margin-bottom: 12px; }
+.ai-shortcuts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.ai-shortcut {
+  padding: 5px 11px; font-size: 11px; font-family: var(--font-mono);
+  border: 1px solid var(--border); background: white; color: var(--gray-700); cursor: pointer; transition: all 0.12s;
+}
+.ai-shortcut:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+.ai-row { display: flex; gap: 7px; }
+.ai-input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); font-size: 13px; outline: none; transition: border-color 0.13s; }
+.ai-input:focus { border-color: var(--red); }
+.ai-type { padding: 8px 10px; border: 1px solid var(--border); background: white; font-size: 11px; font-family: var(--font-mono); color: var(--gray-700); outline: none; cursor: pointer; }
+.ai-run { padding: 8px 16px; background: var(--red); border: 1px solid var(--red); color: white; font-size: 12px; font-family: var(--font-mono); cursor: pointer; transition: all 0.13s; white-space: nowrap; }
+.ai-run:hover { background: var(--red-dark); }
+.ai-loading { display: none; align-items: center; gap: 10px; padding: 14px 0; color: var(--gray-500); font-size: 12px; font-family: var(--font-mono); }
+.ai-loading.show { display: flex; }
+.spinner { width: 15px; height: 15px; border: 2px solid var(--gray-200); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-output { display: none; margin-top: 12px; }
+.ai-output.show { display: block; }
+.ai-out-section { margin-bottom: 14px; }
+.ai-out-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.ai-out-label.gemini { color: #2e7d32; }
+.ai-out-label.claude { color: var(--red); }
+.ai-out-content {
+  padding: 12px 14px; font-size: 12px; line-height: 1.8; color: var(--gray-700);
+  white-space: pre-wrap; border: 1px solid var(--border); background: var(--gray-50);
+  max-height: 180px; overflow-y: auto;
+}
+.ai-out-content.claude-out { font-size: 13px; color: var(--gray-900); background: white; max-height: none; }
+.step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 11px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-200); }
+.step-dot.active { background: var(--red); }
+.step-dot.done { background: #16a34a; }
+.step-label { color: var(--gray-400); }
+.step-label.active { color: var(--red); }
+.step-label.done { color: #16a34a; }
+.step-arrow { color: var(--gray-300); }
+
+/* ── CHECKLIST ── */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); }
+.check-list { border-top: 1px solid var(--border); }
+.check-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.check-item:hover { background: var(--gray-50); margin: 0 -8px; padding: 11px 8px; }
+.checkbox { width: 16px; height: 16px; border: 1.5px solid var(--gray-300); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.13s; }
+.checkbox.checked { background: var(--red); border-color: var(--red); }
+.checkbox.checked::after { content: ''; width: 8px; height: 5px; border-left: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(-45deg) translateY(-1px); display: block; }
+.check-text { font-size: 13px; line-height: 1.5; }
+.check-text.done { color: var(--gray-300); text-decoration: line-through; }
+.check-sub { font-family: var(--font-mono); font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+/* ── PROGRAM ── */
+.prog-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--gray-700); }
+.prog-dot { width: 5px; height: 5px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+
+/* ── NOTES ── */
+.notes-area {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: white;
+  font-size: 13px; font-family: var(--font-sans); color: var(--black); resize: vertical;
+  min-height: 100px; outline: none; line-height: 1.7; font-weight: 300; transition: border-color 0.13s;
+}
+.notes-area:focus { border-color: var(--red); }
+
+/* ── SECTION SPACING ── */
+.section { margin-bottom: 32px; }
+.sec-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 28px; }
+
+/* ── MODAL ── */
+.overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.35); align-items: center; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: white; border: 1px solid var(--border); width: 640px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-head { padding: 18px 24px; border-bottom: 2px solid var(--red); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.modal-x { background: none; border: none; font-size: 22px; color: var(--gray-400); cursor: pointer; line-height: 1; padding: 0; }
+.modal-x:hover { color: var(--black); }
+.modal-body { padding: 24px; }
+.modal-foot { padding: 0 24px 24px; display: flex; justify-content: flex-end; gap: 8px; }
+.field { margin-bottom: 18px; }
+.field label { display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 7px; }
+.field input, .field textarea, .field select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); font-size: 13px; outline: none; transition: border-color 0.13s; background: white; }
+.field input:focus, .field textarea:focus { border-color: var(--red); }
+.field textarea { resize: vertical; min-height: 80px; font-weight: 300; line-height: 1.7; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.analyze-btn {
+  width: 100%; padding: 10px; border: 1px dashed var(--red); background: var(--red-light);
+  color: var(--red); font-size: 12px; font-family: var(--font-mono); letter-spacing: 0.08em;
+  cursor: pointer; transition: all 0.13s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.analyze-btn:hover { background: var(--red-mid); }
+.analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.divider-txt { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--gray-300); padding: 14px 0; position: relative; }
+.divider-txt::before, .divider-txt::after { content:''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--border); }
+.divider-txt::before { left: 0; } .divider-txt::after { right: 0; }
+.a-loading { display: none; align-items: center; gap: 9px; padding: 10px 0; font-family: var(--font-mono); font-size: 11px; color: var(--gray-500); }
+.a-loading.show { display: flex; }
+.ai-preview-box { display: none; border: 1px solid var(--border); background: var(--gray-50); padding: 14px; margin-top: 14px; }
+.ai-preview-box.show { display: block; }
+.preview-row { display: flex; gap: 10px; font-family: var(--font-mono); font-size: 11px; margin-bottom: 5px; line-height: 1.5; }
+.preview-key { color: var(--red); min-width: 70px; flex-shrink: 0; }
+.preview-val { color: var(--gray-700); }
+
+/* ── SETTINGS DRAWER ── */
+.drawer { position: fixed; top: var(--header-h); right: 0; bottom: 0; width: 320px; z-index: 300; background: white; border-left: 1px solid var(--border); transform: translateX(100%); transition: transform 0.2s ease; overflow-y: auto; padding: 24px; }
+.drawer.open { transform: translateX(0); }
+.drawer-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 20px; }
+.drawer-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--gray-200); }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-mark">OS</div>
+    현상설계 OS
+  </div>
+  <div class="header-right">
+    <span id="proj-count" style="font-family:var(--font-mono);font-size:11px;color:var(--gray-400)"></span>
+    <button class="btn btn-ghost btn-sm" onclick="toggleDrawer()">⚙ 설정</button>
+    <button class="btn btn-primary btn-sm" onclick="openAddModal()">+ 공모 추가</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-label">Projects</div>
+    </div>
+    <div id="proj-list"></div>
+  </aside>
+  <main class="main" id="main">
+    <div class="empty" id="empty-state">
+      <div class="empty-icon"></div>
+      <div class="empty-text">공모 프로젝트가 없습니다</div>
+      <button class="btn btn-primary" onclick="openAddModal()">+ 첫 공모 추가하기</button>
+    </div>
+    <div id="detail" class="hidden"></div>
+  </main>
+</div>
+
+<!-- Settings Drawer -->
+<div class="drawer" id="drawer">
+  <div class="drawer-title">설정</div>
+  <div class="field">
+    <label>Gemini API 키</label>
+    <input type="password" id="gemini-key-inp" placeholder="AIza..." />
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray-400);margin-top:5px">localStorage에만 저장됩니다</div>
+  </div>
+  <button class="btn btn-primary" style="width:100%" onclick="saveKey()">저장</button>
+  <hr class="drawer-divider">
+  <div class="field">
+    <label>데이터 내보내기</label>
+    <button class="btn" style="width:100%" onclick="exportData()">JSON 내보내기</button>
+  </div>
+  <div class="field">
+    <label>데이터 가져오기</label>
+    <input type="file" id="import-file" accept=".json" onchange="importData(event)" style="font-size:12px;color:var(--gray-500)" />
+  </div>
+  <hr class="drawer-divider">
+  <button class="btn btn-danger" style="width:100%" onclick="clearAll()">모든 데이터 초기화</button>
+</div>
+
+<!-- Add Project Modal -->
+<div class="overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><div class="logo-mark" style="width:22px;height:22px;font-size:9px">+</div>새 공모 프로젝트</div>
+      <button class="modal-x" onclick="closeAddModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>공모 지침서 URL</label>
+        <input type="url" id="brief-url" placeholder="https://..." />
+      </div>
+      <button class="analyze-btn" id="btn-url" onclick="analyzeURL()">⚡ URL → Gemini 자동 분석</button>
+      <div class="divider-txt">또는 텍스트 직접 붙여넣기</div>
+      <div class="field">
+        <label>지침서 텍스트</label>
+        <textarea id="brief-txt" placeholder="공모 지침서 내용을 붙여넣으세요..."></textarea>
+      </div>
+      <button class="analyze-btn" id="btn-txt" onclick="analyzeText()">⚡ 텍스트 → Gemini 자동 분석</button>
+      <div class="a-loading" id="a-loading"><div class="spinner"></div><span>Gemini 분석 중...</span></div>
+      <div class="ai-preview-box" id="ai-preview"></div>
+      <div style="border-top:1px solid var(--border);padding-top:18px;margin-top:18px">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray-400);margin-bottom:16px;letter-spacing:0.1em;text-transform:uppercase">수동 입력 / 결과 수정</div>
+        <div class="field"><label>공모명 *</label><input type="text" id="f-name" placeholder="예: 서울창업허브 관악 설계공모" /></div>
+        <div class="field-row">
+          <div class="field"><label>마감일 *</label><input type="date" id="f-deadline" /></div>
+          <div class="field"><label>발주처</label><input type="text" id="f-client" placeholder="예: SBA 서울산업진흥원" /></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>연면적</label><input type="text" id="f-area" placeholder="예: 12,500㎡" /></div>
+          <div class="field"><label>공사비 예산</label><input type="text" id="f-budget" placeholder="예: 약 200억원" /></div>
+        </div>
+        <div class="field"><label>요구 프로그램 (줄바꿈 구분)</label><textarea id="f-program" style="min-height:70px" placeholder="창업지원실&#10;교육장&#10;공유오피스"></textarea></div>
+        <div class="field"><label>제출물 규격</label><textarea id="f-deliverables" style="min-height:60px" placeholder="A1 패널 5매, 설계설명서 A4 20p..."></textarea></div>
+        <div class="field"><label>심사위원 / 특이사항</label><textarea id="f-notes" style="min-height:60px" placeholder="심사 전략, 가점 요인..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeAddModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveProject()">프로젝트 생성</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────
+const GEMINI_KEY_DEFAULT = 'AIzaSyDXKPWm0C3uSa7NQWjSYz8YU30CYMeeYZQ';
+
+const STAGES = [
+  { key:'strategy',   label:'전략·리서치', short:'01' },
+  { key:'concept',    label:'분석·컨셉',   short:'02' },
+  { key:'design',     label:'디자인 발전', short:'03' },
+  { key:'production', label:'성과물 제작', short:'04' },
+  { key:'submission', label:'제출·심사',   short:'05' },
+];
+
+const DEFAULT_CHECKS = {
+  strategy:[
+    {text:'공모 지침서(Brief) 정독 완료',sub:'목적·연면적·예산·프로그램 파악'},
+    {text:'가점/감점 요인 별도 정리',sub:'제출물 규격 체크 포함'},
+    {text:'마감 역산 스케줄 작성',sub:'CG·패널·모형 제작 기간 포함'},
+    {text:'심사위원 성향 리서치',sub:'과거 작업물·심사평·선호 가치 파악'},
+    {text:'국내외 우수 사례 조사',sub:'유사 프로그램·규모 3건 이상'},
+  ],
+  concept:[
+    {text:'현장 답사 완료',sub:'경사도·향·맥락·진입로 확인'},
+    {text:'사이트 분석 정리',sub:'QGIS·지구단위계획 규제 체크'},
+    {text:'프로그램 Adjacency 다이어그램 작성',sub:'발주처 요구 면적표 기반'},
+    {text:'Big Idea / 핵심 컨셉 도출',sub:'단 하나의 강력한 메시지'},
+    {text:'컨셉 키워드 팀 합의',sub:''},
+  ],
+  design:[
+    {text:'매스 스터디 옵션 3안 이상',sub:'배치도 확정'},
+    {text:'평면·단면 계획 1차 완성',sub:'동선·피난·구조 고려'},
+    {text:'법규 검토 (건폐율·용적률·주차·조경)',sub:'위반 없음 확인'},
+    {text:'디자인 리뷰 — 컨셉·도면 일치 여부',sub:'내부 회의'},
+    {text:'도면 2차 발전 완료',sub:'장애인 편의시설 포함'},
+    {text:'구조·재료 계획 확정',sub:'공사비 범위 내 검토'},
+  ],
+  production:[
+    {text:'CG 투시도 제작 (대표 이미지)',sub:'D5 Render / Enscape'},
+    {text:'조감도 제작',sub:''},
+    {text:'도면 컬러링 및 다이어그램 제작',sub:'Illustrator / Photoshop'},
+    {text:'패널 레이아웃 초안 완성',sub:'InDesign — 시선 흐름 전략'},
+    {text:'설계설명서 초안 작성',sub:'Claude 활용 권장'},
+    {text:'패널 최종 편집 완료',sub:'제출 규격 확인'},
+    {text:'모형 제작',sub:'요구 시'},
+  ],
+  submission:[
+    {text:'최종 검수 — 오타·면적 오차',sub:'체크리스트 기준'},
+    {text:'법규 위반 최종 확인',sub:'주차·장애인·층수·조경'},
+    {text:'파일 규격 확인',sub:'DPI·형식·용량'},
+    {text:'온라인 제출 완료',sub:'접수 번호 확보'},
+    {text:'오프라인 제출 완료',sub:'해당 시'},
+    {text:'PT 시나리오 작성',sub:'당선 시 대비 — Claude 활용'},
+    {text:'예상 Q&A 답변 준비',sub:'심사위원 성향 기반'},
+  ],
+};
+
+const AI_TASKS = {
+  strategy:[
+    {label:'심사위원 성향 리서치',type:'research'},
+    {label:'유사 사례 조사 (국내외)',type:'casestudy'},
+    {label:'공모 핵심 전략 분석',type:'analysis'},
+  ],
+  concept:[
+    {label:'사이트·맥락 리서치',type:'research'},
+    {label:'컨셉 키워드 브레인스톰',type:'brainstorm'},
+    {label:'프로그램 Adjacency 초안',type:'analysis'},
+  ],
+  design:[
+    {label:'법규 체크리스트 생성',type:'analysis'},
+    {label:'매스 스터디 전략 제안',type:'brainstorm'},
+    {label:'디자인 리뷰 피드백',type:'analysis'},
+  ],
+  production:[
+    {label:'설계설명서 초안 작성',type:'draft'},
+    {label:'패널 스토리라인 구성',type:'draft'},
+    {label:'핵심 메시지 카피 작성',type:'draft'},
+  ],
+  submission:[
+    {label:'최종 체크리스트 생성',type:'analysis'},
+    {label:'PT 스크립트 초안',type:'draft'},
+    {label:'예상 Q&A 시나리오',type:'draft'},
+  ],
+};
+
+// ── STATE ──────────────────────────────────────────────────────────
+let projects = JSON.parse(localStorage.getItem('comp_os_v1') || '[]');
+let currentId = null;
+let currentStage = 0;
+
+const save = () => localStorage.setItem('comp_os_v1', JSON.stringify(projects));
+const getKey = () => localStorage.getItem('gemini_key') || GEMINI_KEY_DEFAULT;
+const $ = id => document.getElementById(id);
+
+// ── SIDEBAR ────────────────────────────────────────────────────────
+function renderSidebar() {
+  const list = $('proj-list');
+  $('proj-count').textContent = projects.length ? `${projects.length}개` : '';
+  if (!projects.length) {
+    list.innerHTML = '<div style="padding:12px 16px;font-size:12px;color:var(--gray-300);font-family:var(--font-mono)">—</div>';
+    return;
+  }
+  list.innerHTML = projects.map(p => {
+    const days = daysLeft(p.deadline);
+    const bc = days===null?'d-ok':days<0?'d-danger':days<=7?'d-warn':'d-ok';
+    const bt = days===null?'—':days<0?`D+${Math.abs(days)}`:days===0?'D-Day':`D-${days}`;
+    const pct = calcPct(p);
+    const act = p.id===currentId?' active':'';
+    return `<div class="proj-item${act}" onclick="select('${p.id}')">
+      <div class="proj-item-name">${p.name}</div>
+      <div class="proj-item-meta"><span class="d-badge ${bc}">${bt}</span><span class="d-pct">${pct}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETAIL ─────────────────────────────────────────────────────────
+function select(id) {
+  currentId = id; currentStage = 0;
+  renderSidebar();
+  $('empty-state').classList.add('hidden');
+  $('detail').classList.remove('hidden');
+  render();
+}
+
+function render() {
+  const p = projects.find(x => x.id === currentId);
+  if (!p) return;
+  const days = daysLeft(p.deadline);
+  const dc = days===null?'ok':days<0?'danger':days<=14?'warn':'ok';
+  const dt = days===null?'마감일 미설정':days<0?`마감 ${Math.abs(days)}일 경과`:days===0?'D-Day!':`D-${days}`;
+  const pct = calcPct(p);
+  const progs = (p.program||'').split('\n').filter(Boolean);
+  const sk = STAGES[currentStage].key;
+  const checks = p.checklists?.[sk] || [];
+  const tasks = AI_TASKS[sk] || [];
+
+  const tabs = STAGES.map((s,i) => {
+    const items = p.checklists?.[s.key]||[];
+    const done = items.filter(x=>x.done).length;
+    const all = items.length;
+    const cls = i===currentStage?' active':(done===all&&all>0?' s-done':'');
+    return `<button class="stage-tab${cls}" onclick="switchStage(${i})">${s.short} ${s.label}${all?` (${done}/${all})`:''}</button>`;
+  }).join('');
+
+  const checkHTML = checks.map((item,i)=>`
+    <div class="check-item" onclick="toggleCheck('${sk}',${i})">
+      <div class="checkbox${item.done?' checked':''}"></div>
+      <div>
+        <div class="check-text${item.done?' done':''}">${item.text}</div>
+        ${item.sub?`<div class="check-sub">${item.sub}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  const shortcutsHTML = tasks.map(t=>`
+    <button class="ai-shortcut" onclick="runTask('${t.label.replace(/'/g,"\\'")}','${t.type}','${sk}')">${t.label}</button>`).join('');
+
+  $('detail').innerHTML = `
+    <div class="section">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+        <div>
+          <div class="proj-title">${p.name}</div>
+          <div class="proj-sub">${p.client||'발주처 미입력'}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">삭제</button>
+      </div>
+      <div class="tags">
+        ${p.area?`<span class="tag tag-red">${p.area}</span>`:''}
+        ${p.budget?`<span class="tag tag-blue">${p.budget}</span>`:''}
+        ${p.deliverables?`<span class="tag">${p.deliverables.slice(0,30)}${p.deliverables.length>30?'…':''}</span>`:''}
+      </div>
+    </div>
+
+    <div class="countdown-bar section">
+      <div class="cd-cell">
+        <div class="cd-label">Deadline</div>
+        <div class="cd-value ${dc}">${dt}</div>
+      </div>
+      <div class="cd-cell" style="flex:2">
+        <div class="cd-label">전체 진행률 — ${pct}%</div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="cd-cell">
+        <div class="cd-label">마감일</div>
+        <div style="font-family:var(--font-mono);font-size:13px;font-weight:500">${p.deadline?new Date(p.deadline).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}):'—'}</div>
+      </div>
+    </div>
+
+    ${(p.area||p.budget||p.deliverables||p.notes)?`
+    <div class="info-grid section">
+      ${p.area?`<div class="info-cell"><div class="info-label">연면적</div><div class="info-value" style="font-family:var(--font-mono)">${p.area}</div></div>`:''}
+      ${p.budget?`<div class="info-cell"><div class="info-label">공사비 예산</div><div class="info-value" style="font-family:var(--font-mono)">${p.budget}</div></div>`:''}
+      ${p.notes?`<div class="info-cell" style="grid-column:span 2"><div class="info-label">특이사항</div><div class="info-value">${p.notes}</div></div>`:''}
+    </div>`:''}
+
+    ${progs.length?`
+    <div class="section">
+      <div class="section-title" style="margin-bottom:10px">Required Program</div>
+      ${progs.map(pg=>`<div class="prog-item"><div class="prog-dot"></div>${pg}</div>`).join('')}
+    </div>`:''}
+
+    <div class="stage-tabs">${tabs}</div>
+
+    <!-- AI PANEL -->
+    <div class="ai-panel section">
+      <div class="ai-panel-head">
+        <div class="ai-panel-title">
+          AI 업무 지원
+          <span class="ai-badge badge-g">Gemini</span>
+          <span style="color:var(--gray-300);font-size:10px">→</span>
+          <span class="ai-badge badge-c">Claude</span>
+        </div>
+      </div>
+      <div class="ai-body">
+        <div class="ai-desc">Gemini가 인터넷을 조사하고 초안을 작성하면, Claude가 건축 실무 관점으로 분석·정제합니다</div>
+        <div class="ai-shortcuts">${shortcutsHTML}</div>
+        <div class="ai-row">
+          <input class="ai-input" id="ai-inp" placeholder="직접 요청 입력 후 Enter..." onkeydown="if(event.key==='Enter')runCustom()" />
+          <select class="ai-type" id="ai-type">
+            <option value="research">리서치</option>
+            <option value="casestudy">사례조사</option>
+            <option value="brainstorm">브레인스톰</option>
+            <option value="analysis">분석</option>
+            <option value="draft">초안작성</option>
+          </select>
+          <button class="ai-run" onclick="runCustom()">▶ 실행</button>
+        </div>
+        <div class="ai-loading" id="ai-loading">
+          <div class="spinner"></div>
+          <span id="ai-loading-txt">처리 중...</span>
+        </div>
+        <div class="ai-output" id="ai-output">
+          <div class="step-indicator">
+            <div class="step-dot" id="sd1"></div><span class="step-label" id="sl1">① Gemini 조사</span>
+            <span class="step-arrow">→</span>
+            <div class="step-dot" id="sd2"></div><span class="step-label" id="sl2">② Claude 분석</span>
+          </div>
+          <div id="ai-out-inner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">${STAGES[currentStage].label} 체크리스트</div>
+        <button class="btn btn-ghost btn-sm" onclick="addCheck('${sk}')">+ 추가</button>
+      </div>
+      <div class="check-list">${checkHTML||'<div style="padding:12px 0;font-size:12px;color:var(--gray-400)">항목 없음</div>'}</div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="section">
+      <div class="section-title" style="margin-bottom:10px">전략 메모</div>
+      <textarea class="notes-area" id="stage-notes" placeholder="이 단계의 전략, 아이디어, AI 결과 요약..."
+        onblur="saveNote(this.value)">${p.stageNotes?.[sk]||''}</textarea>
+    </div>
+  `;
+}
+
+// ── AI PIPELINE ────────────────────────────────────────────────────
+function buildCtx(p, sk) {
+  return `공모명: ${p.name}\n발주처: ${p.client||'—'}\n연면적: ${p.area||'—'}\n공사비: ${p.budget||'—'}\n마감일: ${p.deadline||'—'}\n요구 프로그램: ${p.program||'—'}\n특이사항: ${p.notes||'—'}\n현재 단계: ${STAGES.find(s=>s.key===sk)?.label||'—'}`;
+}
+
+function gPrompt(label, type, ctx) {
+  const base = `아래는 건축 현상설계 공모 정보입니다:\n\n${ctx}\n\n`;
+  const map = {
+    research: `${base}[리서치] ${label}\n\n최신 정보를 조사하고 구체적인 사실·수치·사례를 포함해 정리해주세요. 가능하면 출처를 명시해주세요.`,
+    casestudy: `${base}[사례조사] ${label}\n\n유사한 국내외 건축 사례 3~5개를 조사해 각각: 프로젝트명, 위치, 규모, 핵심 디자인 전략, 이 공모에의 시사점을 정리해주세요.`,
+    brainstorm: `${base}[브레인스톰] ${label}\n\n창의적 아이디어를 다양하게 제안해주세요. 형식에 얽매이지 말고 최대한 많은 방향을 제시해주세요.`,
+    analysis: `${base}[분석] ${label}\n\n핵심 포인트, 주의사항, 전략적 판단 사항을 실무 관점에서 정리해주세요.`,
+    draft: `${base}[초안 작성] ${label}\n\n실제 제출에 활용 가능한 수준으로 구체적으로 작성해주세요.`,
+  };
+  return map[type] || map.analysis;
+}
+
+function cPrompt(label, ctx, geminiOut) {
+  return `당신은 건축 현상설계 전문 컨설턴트입니다.
+
+[공모 정보]
+${ctx}
+
+[Gemini 조사·초안]
+${geminiOut}
+
+[요청]
+위 내용을 바탕으로:
+1. 건축 실무 관점에서 Gemini 결과의 핵심을 검토하고 보완점을 지적하세요
+2. "${label}"에 대해 실제 활용 가능한 최종 결과물을 정리하세요
+3. 이 공모의 경쟁력을 높이는 핵심 인사이트 1~2가지를 추가하세요
+
+간결하고 실용적으로. 헤더(#)는 쓰지 말고 [섹션명] 형식으로 구분하세요.`;
+}
+
+async function runTask(label, type, sk) {
+  const p = projects.find(x => x.id === currentId);
+  await pipeline(label, type, buildCtx(p, sk));
+}
+
+async function runCustom() {
+  const input = $('ai-inp').value.trim();
+  if (!input) return;
+  const p = projects.find(x => x.id === currentId);
+  const type = $('ai-type').value;
+  await pipeline(input, type, buildCtx(p, STAGES[currentStage].key));
+}
+
+async function pipeline(label, type, ctx) {
+  const loading = $('ai-loading');
+  const loadTxt = $('ai-loading-txt');
+  const output = $('ai-output');
+  const inner = $('ai-out-inner');
+  const sd1=$('sd1'),sl1=$('sl1'),sd2=$('sd2'),sl2=$('sl2');
+
+  loading.classList.add('show');
+  output.classList.remove('show');
+  inner.innerHTML = '';
+
+  // Step 1: Gemini
+  loadTxt.textContent = '① Gemini 조사·초안 작성 중...';
+  sd1.className = 'step-dot active'; sl1.className = 'step-label active';
+  sd2.className = 'step-dot'; sl2.className = 'step-label';
+
+  let gOut = '';
+  try {
+    const key = getKey();
+    // Try with Google Search grounding
+    let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts:[{text: gPrompt(label,type,ctx)}]}], tools:[{googleSearch:{}}] })
+    });
+    if (!res.ok) {
+      // Fallback without search
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ contents:[{parts:[{text: gPrompt(label,type,ctx)}]}] })
+      });
+    }
+    const d = await res.json();
+    gOut = d.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'결과 없음';
+  } catch(e) { gOut = `Gemini 오류: ${e.message}`; }
+
+  // Step 2: Claude
+  loadTxt.textContent = '② Claude 분석·정제 중...';
+  sd1.className = 'step-dot done'; sl1.className = 'step-label done';
+  sd2.className = 'step-dot active'; sl2.className = 'step-label active';
+
+  let cOut = '';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:cPrompt(label,ctx,gOut)}] })
+    });
+    if (res.ok) {
+      const d = await res.json();
+      cOut = d.content?.map(b=>b.text||'').join('')||'응답 없음';
+    } else {
+      const d = await res.json();
+      cOut = `Claude 오류: ${d.error?.message||res.status}`;
+    }
+  } catch(e) { cOut = `Claude 연결 오류: ${e.message}`; }
+
+  loading.classList.remove('show');
+  sd1.className='step-dot done'; sl1.className='step-label done';
+  sd2.className='step-dot done'; sl2.className='step-label done';
+  output.classList.add('show');
+
+  inner.innerHTML = `
+    <div class="ai-out-section">
+      <div class="ai-out-label gemini">① Gemini — 조사·초안</div>
+      <div class="ai-out-content">${gOut}</div>
+    </div>
+    <div class="ai-out-section">
+      <div class="ai-out-label claude">② Claude — 분석·정제</div>
+      <div class="ai-out-content claude-out">${cOut}</div>
+    </div>`;
+}
+
+// ── GEMINI EXTRACT ─────────────────────────────────────────────────
+const EXTRACT = text => `다음 건축 현상설계 공모 지침서에서 정보를 추출해 JSON만 응답하세요. 추가 설명 없이 JSON만.
+{"name":"","deadline":"YYYY-MM-DD","client":"","area":"","budget":"","program":"줄바꿈\\n구분","deliverables":"","key_notes":""}
+지침서: ${text.slice(0,8000)}`;
+
+async function analyzeURL() {
+  const url = $('brief-url').value.trim();
+  if (!url) { alert('URL을 입력해주세요.'); return; }
+  setA(true);
+  const raw = await geminiCall(`다음 URL의 공모 페이지를 분석해 정보를 추출하세요.\nURL: ${url}\n\n${EXTRACT('[URL 내용 분석]')}`);
+  setA(false);
+  if (raw) fill(raw);
+}
+async function analyzeText() {
+  const txt = $('brief-txt').value.trim();
+  if (!txt) { alert('텍스트를 붙여넣어 주세요.'); return; }
+  setA(true);
+  const raw = await geminiCall(EXTRACT(txt));
+  setA(false);
+  if (raw) fill(raw);
+}
+async function geminiCall(prompt) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${getKey()}`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts:[{text:prompt}]}] })
+    });
+    const d = await res.json();
+    return d.candidates?.[0]?.content?.parts?.[0]?.text||null;
+  } catch(e) { alert('Gemini 오류: '+e.message); return null; }
+}
+function setA(on) {
+  $('a-loading').classList.toggle('show',on);
+  $('btn-url').disabled=on; $('btn-txt').disabled=on;
+}
+function fill(raw) {
+  try {
+    const d = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    if(d.name)$('f-name').value=d.name;
+    if(d.deadline)$('f-deadline').value=d.deadline;
+    if(d.client)$('f-client').value=d.client;
+    if(d.area)$('f-area').value=d.area;
+    if(d.budget)$('f-budget').value=d.budget;
+    if(d.program)$('f-program').value=d.program;
+    if(d.deliverables)$('f-deliverables').value=d.deliverables;
+    if(d.key_notes)$('f-notes').value=d.key_notes;
+    const prev = $('ai-preview');
+    prev.innerHTML = [
+      d.name&&`<div class="preview-row"><span class="preview-key">공모명</span><span class="preview-val">${d.name}</span></div>`,
+      d.deadline&&`<div class="preview-row"><span class="preview-key">마감일</span><span class="preview-val">${d.deadline}</span></div>`,
+      d.client&&`<div class="preview-row"><span class="preview-key">발주처</span><span class="preview-val">${d.client}</span></div>`,
+      d.area&&`<div class="preview-row"><span class="preview-key">연면적</span><span class="preview-val">${d.area}</span></div>`,
+      d.key_notes&&`<div class="preview-row"><span class="preview-key">특이사항</span><span class="preview-val">${d.key_notes}</span></div>`,
+    ].filter(Boolean).join('');
+    prev.classList.add('show');
+  } catch(e) { alert('파싱 오류. 수동 입력 해주세요.\n'+raw.slice(0,200)); }
+}
+
+// ── CRUD ───────────────────────────────────────────────────────────
+function saveProject() {
+  const name = $('f-name').value.trim();
+  if (!name) { alert('공모명을 입력해주세요.'); return; }
+  const id = 'p_'+Date.now();
+  const checklists = {};
+  STAGES.forEach(s=>{ checklists[s.key] = DEFAULT_CHECKS[s.key].map(c=>({...c,done:false})); });
+  projects.unshift({ id, name, deadline:$('f-deadline').value, client:$('f-client').value, area:$('f-area').value, budget:$('f-budget').value, program:$('f-program').value, deliverables:$('f-deliverables').value, notes:$('f-notes').value, checklists, stageNotes:{}, createdAt:new Date().toISOString() });
+  save(); closeAddModal(); renderSidebar(); select(id);
+}
+function deleteProject(id) {
+  if(!confirm('삭제하시겠습니까?'))return;
+  projects=projects.filter(p=>p.id!==id); save(); currentId=null;
+  $('detail').classList.add('hidden'); $('empty-state').classList.remove('hidden'); renderSidebar();
+}
+function toggleCheck(sk,idx) {
+  const p=projects.find(x=>x.id===currentId);
+  if(!p?.checklists?.[sk])return;
+  p.checklists[sk][idx].done=!p.checklists[sk][idx].done;
+  save(); render(); renderSidebar();
+}
+function addCheck(sk) {
+  const text=prompt('새 체크리스트 항목:'); if(!text)return;
+  const p=projects.find(x=>x.id===currentId);
+  if(!p.checklists[sk])p.checklists[sk]=[];
+  p.checklists[sk].push({text,sub:'',done:false}); save(); render();
+}
+function saveNote(val) {
+  const p=projects.find(x=>x.id===currentId); if(!p)return;
+  if(!p.stageNotes)p.stageNotes={};
+  p.stageNotes[STAGES[currentStage].key]=val; save();
+}
+function switchStage(i){ currentStage=i; render(); }
+
+// ── HELPERS ────────────────────────────────────────────────────────
+function daysLeft(d){ if(!d)return null; return Math.ceil((new Date(d)-new Date())/86400000); }
+function calcPct(p){ let t=0,d=0; STAGES.forEach(s=>{const it=p.checklists?.[s.key]||[];t+=it.length;d+=it.filter(i=>i.done).length;}); return t?Math.round(d/t*100):0; }
+
+// ── MODAL / DRAWER ─────────────────────────────────────────────────
+function openAddModal(){
+  $('add-modal').classList.add('open');
+  ['f-name','f-deadline','f-client','f-area','f-budget','f-program','f-deliverables','f-notes','brief-url','brief-txt'].forEach(id=>{$(id).value='';});
+  $('ai-preview').classList.remove('show');
+}
+function closeAddModal(){ $('add-modal').classList.remove('open'); }
+function toggleDrawer(){ $('drawer').classList.toggle('open'); $('gemini-key-inp').value=getKey(); }
+function saveKey(){ localStorage.setItem('gemini_key',$('gemini-key-inp').value.trim()); alert('저장됐습니다.'); }
+
+// ── EXPORT / IMPORT ────────────────────────────────────────────────
+function exportData(){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(projects,null,2)],{type:'application/json'})); a.download=`competition_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
+function importData(e){ const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(Array.isArray(d)){projects=[...d,...projects];save();renderSidebar();alert(`${d.length}개 가져왔습니다.`);}}catch{alert('파일 오류');}};r.readAsText(f); }
+function clearAll(){ if(!confirm('모두 삭제?'))return;projects=[];save();currentId=null;$('detail').classList.add('hidden');$('empty-state').classList.remove('hidden');renderSidebar(); }
+
+// ── INIT ───────────────────────────────────────────────────────────
+renderSidebar();
+if(projects.length) select(projects[0].id);
+</script>
+</body>
+</html>
