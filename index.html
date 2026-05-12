@@ -6,378 +6,379 @@
 <title>현상설계 OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
 :root {
-  --red: #e60235;
-  --red-light: #fff0f3;
-  --red-mid: #ffd6df;
-  --red-dark: #b50029;
-  --black: #111111;
-  --gray-900: #1a1a1a;
-  --gray-700: #444;
-  --gray-500: #777;
-  --gray-400: #999;
-  --gray-300: #ccc;
-  --gray-200: #e0e0e0;
-  --gray-100: #f4f4f4;
-  --gray-50: #fafafa;
-  --white: #ffffff;
-  --border: #e8e8e8;
-  --shadow-lg: 0 4px 24px rgba(0,0,0,0.10);
-  --font-sans: 'Noto Sans KR', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  --sidebar-w: 260px;
-  --header-h: 56px;
+  --red:#e60235; --red-l:#fff0f3; --red-m:#ffd6df; --red-d:#b50029;
+  --black:#111; --g9:#1a1a1a; --g7:#444; --g5:#777; --g4:#999;
+  --g3:#ccc; --g2:#e0e0e0; --g1:#f4f4f4; --g0:#fafafa;
+  --white:#fff; --border:#e8e8e8;
+  --font:'Noto Sans KR',sans-serif; --mono:'DM Mono',monospace;
+  --sw:260px; --hh:56px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: var(--font-sans); background: var(--white); color: var(--black); font-size: 14px; line-height: 1.6; }
-button { font-family: var(--font-sans); cursor: pointer; }
-input, textarea, select { font-family: var(--font-sans); color: var(--black); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font);background:var(--white);color:var(--black);font-size:14px;line-height:1.6;}
+button,input,textarea,select{font-family:var(--font);}
+button{cursor:pointer;}
 
-/* ── HEADER ── */
-.header {
-  position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
-  background: var(--white); border-bottom: 2px solid var(--red);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 28px; z-index: 200;
-}
-.header-logo {
-  display: flex; align-items: center; gap: 12px;
-  font-family: var(--font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
-  color: var(--black);
-}
-.logo-mark {
-  width: 30px; height: 30px; background: var(--red);
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
-  font-family: var(--font-mono);
-}
-.header-right { display: flex; align-items: center; gap: 8px; }
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);background:var(--white);border-bottom:2px solid var(--red);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:200;}
+.logo{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;font-weight:500;}
+.logo-sq{width:30px;height:30px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;font-family:var(--mono);}
+.hdr-r{display:flex;align-items:center;gap:8px;}
 
-/* ── BUTTONS ── */
-.btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 7px 15px; font-size: 13px; font-weight: 400;
-  border: 1px solid var(--border); background: var(--white);
-  color: var(--gray-700); transition: all 0.13s; white-space: nowrap; cursor: pointer;
-}
-.btn:hover { border-color: var(--gray-300); background: var(--gray-50); }
-.btn-primary { background: var(--red); border-color: var(--red); color: white; font-weight: 500; }
-.btn-primary:hover { background: var(--red-dark); border-color: var(--red-dark); }
-.btn-ghost { border-color: transparent; background: transparent; }
-.btn-ghost:hover { background: var(--gray-100); }
-.btn-sm { padding: 5px 11px; font-size: 12px; }
-.btn-danger { border-color: var(--red); color: var(--red); background: white; }
-.btn-danger:hover { background: var(--red-light); }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;font-size:13px;border:1px solid var(--border);background:var(--white);color:var(--g7);transition:all .13s;white-space:nowrap;cursor:pointer;}
+.btn:hover{border-color:var(--g3);background:var(--g0);}
+.btn-p{background:var(--red);border-color:var(--red);color:#fff;font-weight:500;}
+.btn-p:hover{background:var(--red-d);border-color:var(--red-d);}
+.btn-ghost{border-color:transparent;background:transparent;}
+.btn-ghost:hover{background:var(--g1);}
+.btn-sm{padding:5px 11px;font-size:12px;}
+.btn-danger{border-color:var(--red);color:var(--red);}
+.btn-danger:hover{background:var(--red-l);}
+.btn-outline{border-color:var(--red);color:var(--red);background:var(--white);}
+.btn-outline:hover{background:var(--red-l);}
 
-/* ── LAYOUT ── */
-.app { display: flex; padding-top: var(--header-h); min-height: 100vh; }
+/* LAYOUT */
+.app{display:flex;padding-top:var(--hh);min-height:100vh;}
+.sidebar{width:var(--sw);flex-shrink:0;border-right:1px solid var(--border);position:fixed;top:var(--hh);bottom:0;left:0;overflow-y:auto;background:var(--g0);}
+.sb-top{padding:20px 16px 8px;}
+.sb-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--g4);margin-bottom:8px;}
+.pi{padding:11px 16px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;}
+.pi:hover{background:var(--white);border-left-color:var(--g2);}
+.pi.active{background:var(--white);border-left-color:var(--red);}
+.pi-name{font-size:13px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pi-meta{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.db{font-family:var(--mono);font-size:10px;padding:1px 7px;border:1px solid;}
+.db-ok{border-color:var(--g3);color:var(--g5);}
+.db-warn{border-color:#f59e0b;color:#d97706;background:#fffbeb;}
+.db-danger{border-color:var(--red);color:var(--red);background:var(--red-l);}
+.dp{font-family:var(--mono);font-size:10px;color:var(--g4);}
 
-/* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar-w); flex-shrink: 0;
-  border-right: 1px solid var(--border);
-  position: fixed; top: var(--header-h); bottom: 0; left: 0;
-  overflow-y: auto; background: var(--gray-50);
-}
-.sidebar-top { padding: 20px 16px 8px; }
-.sidebar-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
-.proj-item { padding: 11px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.12s; }
-.proj-item:hover { background: var(--white); border-left-color: var(--gray-200); }
-.proj-item.active { background: var(--white); border-left-color: var(--red); }
-.proj-item-name { font-size: 13px; font-weight: 400; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.proj-item-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-.d-badge { font-family: var(--font-mono); font-size: 10px; padding: 1px 7px; border: 1px solid; }
-.d-ok { border-color: var(--gray-300); color: var(--gray-500); }
-.d-warn { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
-.d-danger { border-color: var(--red); color: var(--red); background: var(--red-light); }
-.d-pct { font-family: var(--font-mono); font-size: 10px; color: var(--gray-400); }
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;padding:36px 40px;min-height:calc(100vh - var(--hh));}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;text-align:center;}
+.empty-box{width:48px;height:48px;border:2px solid var(--g2);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:22px;color:var(--g3);}
+.empty-txt{font-size:13px;color:var(--g4);}
 
-/* ── MAIN CONTENT ── */
-.main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px; min-height: calc(100vh - var(--header-h)); }
+/* DETAIL */
+.proj-title{font-size:22px;font-weight:700;line-height:1.3;margin-bottom:4px;}
+.proj-sub{font-size:13px;color:var(--g5);margin-bottom:16px;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px;}
+.tag{font-family:var(--mono);font-size:11px;padding:3px 9px;border:1px solid var(--border);color:var(--g7);}
+.tag-r{border-color:var(--red);color:var(--red);background:var(--red-l);}
+.tag-b{border-color:#3b82f6;color:#2563eb;background:#eff6ff;}
 
-/* ── EMPTY ── */
-.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; gap: 14px; text-align: center; }
-.empty-icon { width: 48px; height: 48px; border: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
-.empty-icon::before { content: '+'; font-size: 24px; color: var(--gray-300); }
-.empty-text { font-size: 13px; color: var(--gray-400); }
+/* COUNTDOWN */
+.cd-bar{display:flex;border:1px solid var(--border);margin-bottom:32px;}
+.cd-cell{padding:16px 22px;flex:1;}
+.cd-cell+.cd-cell{border-left:1px solid var(--border);}
+.cd-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);margin-bottom:5px;}
+.cd-val{font-family:var(--mono);font-size:22px;font-weight:500;}
+.cd-ok{color:#16a34a;} .cd-warn{color:#d97706;} .cd-danger{color:var(--red);}
+.prog-track{height:3px;background:var(--g1);margin-top:10px;}
+.prog-fill{height:100%;background:var(--red);transition:width .4s ease;}
 
-/* ── PROJECT DETAIL ── */
-.proj-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
-.proj-sub { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; }
-.tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
-.tag { font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; border: 1px solid var(--border); color: var(--gray-700); }
-.tag-red { border-color: var(--red); color: var(--red); background: var(--red-light); }
-.tag-blue { border-color: #3b82f6; color: #2563eb; background: #eff6ff; }
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));border:1px solid var(--border);margin-bottom:28px;}
+.ic{padding:13px 15px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.ic-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);margin-bottom:4px;}
+.ic-val{font-size:13px;font-weight:500;}
 
-/* ── COUNTDOWN BAR ── */
-.countdown-bar {
-  display: flex; align-items: center; gap: 0;
-  border: 1px solid var(--border); margin-bottom: 32px; background: var(--white);
-}
-.cd-cell { padding: 16px 24px; flex: 1; }
-.cd-cell + .cd-cell { border-left: 1px solid var(--border); }
-.cd-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 5px; }
-.cd-value { font-family: var(--font-mono); font-size: 24px; font-weight: 500; }
-.cd-value.ok { color: #16a34a; }
-.cd-value.warn { color: #d97706; }
-.cd-value.danger { color: var(--red); }
-.progress-track { height: 3px; background: var(--gray-100); margin-top: 10px; }
-.progress-fill { height: 100%; background: var(--red); transition: width 0.4s ease; }
+/* STAGE TABS */
+.stage-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:28px;overflow-x:auto;}
+.stab{padding:10px 18px;font-size:11px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;border:none;background:none;color:var(--g4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;}
+.stab:hover{color:var(--black);}
+.stab.active{color:var(--red);border-bottom-color:var(--red);font-weight:500;}
+.stab.s-done{color:var(--g3);}
 
-/* ── INFO GRID ── */
-.info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); border: 1px solid var(--border); margin-bottom: 32px; }
-.info-cell { padding: 14px 16px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.info-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 5px; }
-.info-value { font-size: 13px; font-weight: 500; line-height: 1.5; }
+/* AI PANEL */
+.ai-panel{border:1px solid var(--border);margin-bottom:32px;}
+.ai-ph{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:var(--g0);border-bottom:1px solid var(--border);}
+.ai-pt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g7);display:flex;align-items:center;gap:8px;}
+.ai-bw{font-size:10px;padding:2px 7px;font-weight:500;font-family:var(--mono);}
+.bg{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;}
+.bc{background:var(--red-l);color:var(--red);border:1px solid var(--red-m);}
+.ai-body{padding:16px;}
+.ai-desc{font-size:12px;color:var(--g5);margin-bottom:12px;}
+.ai-shortcuts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.ai-sc{padding:5px 11px;font-size:11px;font-family:var(--mono);border:1px solid var(--border);background:white;color:var(--g7);cursor:pointer;transition:all .12s;}
+.ai-sc:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
+.ai-row{display:flex;gap:7px;}
+.ai-inp{flex:1;padding:8px 12px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;}
+.ai-inp:focus{border-color:var(--red);}
+.ai-sel{padding:8px 10px;border:1px solid var(--border);background:white;font-size:11px;font-family:var(--mono);color:var(--g7);outline:none;}
+.ai-run{padding:8px 16px;background:var(--red);border:none;color:white;font-size:12px;font-family:var(--mono);cursor:pointer;white-space:nowrap;}
+.ai-run:hover{background:var(--red-d);}
+.ai-loading{display:none;align-items:center;gap:10px;padding:14px 0;color:var(--g5);font-size:12px;font-family:var(--mono);}
+.ai-loading.show{display:flex;}
+.spinner{width:15px;height:15px;border:2px solid var(--g2);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-out{display:none;margin-top:12px;}
+.ai-out.show{display:block;}
+.ai-out-sec{margin-bottom:14px;}
+.ai-out-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.ai-out-lbl.g{color:#2e7d32;} .ai-out-lbl.c{color:var(--red);}
+.ai-out-box{padding:12px 14px;font-size:12px;line-height:1.8;color:var(--g7);white-space:pre-wrap;border:1px solid var(--border);background:var(--g0);max-height:180px;overflow-y:auto;}
+.ai-out-box.cl{font-size:13px;color:var(--g9);background:white;max-height:none;}
+.step-ind{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-family:var(--mono);font-size:11px;}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--g2);}
+.sdot.active{background:var(--red);} .sdot.done{background:#16a34a;}
+.slbl{color:var(--g4);} .slbl.active{color:var(--red);} .slbl.done{color:#16a34a;}
 
-/* ── STAGE TABS ── */
-.stage-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; overflow-x: auto; }
-.stage-tab {
-  padding: 10px 18px; font-size: 11px; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase;
-  border: none; background: none; color: var(--gray-400); cursor: pointer;
-  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: all 0.12s;
-}
-.stage-tab:hover { color: var(--black); }
-.stage-tab.active { color: var(--red); border-bottom-color: var(--red); font-weight: 500; }
-.stage-tab.s-done { color: var(--gray-300); }
+/* DEBUG PANEL */
+.debug-panel{display:none;background:#1a1a1a;color:#00ff88;font-family:var(--mono);font-size:11px;padding:12px 14px;margin-top:8px;line-height:1.8;max-height:200px;overflow-y:auto;white-space:pre-wrap;}
+.debug-panel.show{display:block;}
+.debug-toggle{font-family:var(--mono);font-size:10px;color:var(--g4);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block;}
 
-/* ── AI PANEL ── */
-.ai-panel { border: 1px solid var(--border); margin-bottom: 32px; }
-.ai-panel-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 11px 16px; background: var(--gray-50); border-bottom: 1px solid var(--border);
-}
-.ai-panel-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
-.ai-badge { font-size: 10px; padding: 2px 7px; font-weight: 500; font-family: var(--font-mono); }
-.badge-g { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-.badge-c { background: var(--red-light); color: var(--red); border: 1px solid var(--red-mid); }
-.ai-body { padding: 16px; }
-.ai-desc { font-size: 12px; color: var(--gray-500); margin-bottom: 12px; }
-.ai-shortcuts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-.ai-shortcut {
-  padding: 5px 11px; font-size: 11px; font-family: var(--font-mono);
-  border: 1px solid var(--border); background: white; color: var(--gray-700); cursor: pointer; transition: all 0.12s;
-}
-.ai-shortcut:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
-.ai-row { display: flex; gap: 7px; }
-.ai-input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); font-size: 13px; outline: none; transition: border-color 0.13s; }
-.ai-input:focus { border-color: var(--red); }
-.ai-type { padding: 8px 10px; border: 1px solid var(--border); background: white; font-size: 11px; font-family: var(--font-mono); color: var(--gray-700); outline: none; cursor: pointer; }
-.ai-run { padding: 8px 16px; background: var(--red); border: 1px solid var(--red); color: white; font-size: 12px; font-family: var(--font-mono); cursor: pointer; transition: all 0.13s; white-space: nowrap; }
-.ai-run:hover { background: var(--red-dark); }
-.ai-loading { display: none; align-items: center; gap: 10px; padding: 14px 0; color: var(--gray-500); font-size: 12px; font-family: var(--font-mono); }
-.ai-loading.show { display: flex; }
-.spinner { width: 15px; height: 15px; border: 2px solid var(--gray-200); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.ai-output { display: none; margin-top: 12px; }
-.ai-output.show { display: block; }
-.ai-out-section { margin-bottom: 14px; }
-.ai-out-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-.ai-out-label.gemini { color: #2e7d32; }
-.ai-out-label.claude { color: var(--red); }
-.ai-out-content {
-  padding: 12px 14px; font-size: 12px; line-height: 1.8; color: var(--gray-700);
-  white-space: pre-wrap; border: 1px solid var(--border); background: var(--gray-50);
-  max-height: 180px; overflow-y: auto;
-}
-.ai-out-content.claude-out { font-size: 13px; color: var(--gray-900); background: white; max-height: none; }
-.step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 11px; }
-.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-200); }
-.step-dot.active { background: var(--red); }
-.step-dot.done { background: #16a34a; }
-.step-label { color: var(--gray-400); }
-.step-label.active { color: var(--red); }
-.step-label.done { color: #16a34a; }
-.step-arrow { color: var(--gray-300); }
+/* CHECKLIST */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sec-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);}
+.chk-list{border-top:1px solid var(--border);}
+.chk-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.chk-item:hover{background:var(--g0);margin:0 -8px;padding:11px 8px;}
+.chkbox{width:16px;height:16px;border:1.5px solid var(--g3);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .13s;}
+.chkbox.on{background:var(--red);border-color:var(--red);}
+.chkbox.on::after{content:'';width:8px;height:5px;border-left:1.5px solid white;border-bottom:1.5px solid white;transform:rotate(-45deg) translateY(-1px);display:block;}
+.chk-txt{font-size:13px;line-height:1.5;}
+.chk-txt.done{color:var(--g3);text-decoration:line-through;}
+.chk-sub{font-family:var(--mono);font-size:11px;color:var(--g4);margin-top:2px;}
 
-/* ── CHECKLIST ── */
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.section-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); }
-.check-list { border-top: 1px solid var(--border); }
-.check-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
-.check-item:hover { background: var(--gray-50); margin: 0 -8px; padding: 11px 8px; }
-.checkbox { width: 16px; height: 16px; border: 1.5px solid var(--gray-300); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.13s; }
-.checkbox.checked { background: var(--red); border-color: var(--red); }
-.checkbox.checked::after { content: ''; width: 8px; height: 5px; border-left: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(-45deg) translateY(-1px); display: block; }
-.check-text { font-size: 13px; line-height: 1.5; }
-.check-text.done { color: var(--gray-300); text-decoration: line-through; }
-.check-sub { font-family: var(--font-mono); font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+/* PROGRAM TABLE */
+.prog-table{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:13px;}
+.prog-table th{background:var(--g0);padding:8px 12px;text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--g5);border:1px solid var(--border);font-weight:400;}
+.prog-table td{padding:8px 12px;border:1px solid var(--border);vertical-align:middle;}
+.prog-table td:last-child{text-align:right;font-family:var(--mono);}
+.prog-table tr.cat-row td{background:var(--g0);font-weight:500;color:var(--g7);}
+.prog-table .del-btn{background:none;border:none;color:var(--g3);cursor:pointer;font-size:14px;padding:0 4px;}
+.prog-table .del-btn:hover{color:var(--red);}
+.prog-total{display:flex;justify-content:flex-end;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--g7);border:1px solid var(--border);border-top:none;background:var(--g0);}
+.prog-total span{color:var(--red);font-weight:500;margin-left:8px;}
 
-/* ── PROGRAM ── */
-.prog-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--gray-700); }
-.prog-dot { width: 5px; height: 5px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+/* PROGRAM INPUT */
+.prog-input-row{display:grid;grid-template-columns:1fr 1.5fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px;}
+.prog-input-row input{padding:8px 10px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;width:100%;}
+.prog-input-row input:focus{border-color:var(--red);}
+.prog-input-row .add-btn{padding:8px 14px;background:var(--red);border:none;color:white;font-size:12px;font-family:var(--mono);cursor:pointer;white-space:nowrap;}
 
-/* ── NOTES ── */
-.notes-area {
-  width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: white;
-  font-size: 13px; font-family: var(--font-sans); color: var(--black); resize: vertical;
-  min-height: 100px; outline: none; line-height: 1.7; font-weight: 300; transition: border-color 0.13s;
-}
-.notes-area:focus { border-color: var(--red); }
+/* NOTES */
+.notes-area{width:100%;padding:12px 14px;border:1px solid var(--border);background:white;font-size:13px;color:var(--black);resize:vertical;min-height:100px;outline:none;line-height:1.7;font-weight:300;transition:border-color .13s;}
+.notes-area:focus{border-color:var(--red);}
+.section{margin-bottom:32px;}
 
-/* ── SECTION SPACING ── */
-.section { margin-bottom: 32px; }
-.sec-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 28px; }
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.35);align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:white;border:1px solid var(--border);width:680px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,.1);}
+.modal-hd{padding:18px 24px;border-bottom:2px solid var(--red);display:flex;align-items:center;justify-content:space-between;}
+.modal-ttl{font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.modal-x{background:none;border:none;font-size:22px;color:var(--g4);cursor:pointer;line-height:1;}
+.modal-x:hover{color:var(--black);}
+.modal-body{padding:24px;}
+.modal-ft{padding:0 24px 24px;display:flex;justify-content:flex-end;gap:8px;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);margin-bottom:7px;}
+.field input,.field textarea,.field select{width:100%;padding:9px 12px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;background:white;color:var(--black);}
+.field input:focus,.field textarea:focus{border-color:var(--red);}
+.field textarea{resize:vertical;min-height:70px;font-weight:300;line-height:1.7;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
 
-/* ── MODAL ── */
-.overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.35); align-items: center; justify-content: center; }
-.overlay.open { display: flex; }
-.modal { background: white; border: 1px solid var(--border); width: 640px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
-.modal-head { padding: 18px 24px; border-bottom: 2px solid var(--red); display: flex; align-items: center; justify-content: space-between; }
-.modal-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-.modal-x { background: none; border: none; font-size: 22px; color: var(--gray-400); cursor: pointer; line-height: 1; padding: 0; }
-.modal-x:hover { color: var(--black); }
-.modal-body { padding: 24px; }
-.modal-foot { padding: 0 24px 24px; display: flex; justify-content: flex-end; gap: 8px; }
-.field { margin-bottom: 18px; }
-.field label { display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 7px; }
-.field input, .field textarea, .field select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); font-size: 13px; outline: none; transition: border-color 0.13s; background: white; }
-.field input:focus, .field textarea:focus { border-color: var(--red); }
-.field textarea { resize: vertical; min-height: 80px; font-weight: 300; line-height: 1.7; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.analyze-btn {
-  width: 100%; padding: 10px; border: 1px dashed var(--red); background: var(--red-light);
-  color: var(--red); font-size: 12px; font-family: var(--font-mono); letter-spacing: 0.08em;
-  cursor: pointer; transition: all 0.13s; display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.analyze-btn:hover { background: var(--red-mid); }
-.analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.divider-txt { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--gray-300); padding: 14px 0; position: relative; }
-.divider-txt::before, .divider-txt::after { content:''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--border); }
-.divider-txt::before { left: 0; } .divider-txt::after { right: 0; }
-.a-loading { display: none; align-items: center; gap: 9px; padding: 10px 0; font-family: var(--font-mono); font-size: 11px; color: var(--gray-500); }
-.a-loading.show { display: flex; }
-.ai-preview-box { display: none; border: 1px solid var(--border); background: var(--gray-50); padding: 14px; margin-top: 14px; }
-.ai-preview-box.show { display: block; }
-.preview-row { display: flex; gap: 10px; font-family: var(--font-mono); font-size: 11px; margin-bottom: 5px; line-height: 1.5; }
-.preview-key { color: var(--red); min-width: 70px; flex-shrink: 0; }
-.preview-val { color: var(--gray-700); }
+/* FILE UPLOAD ZONE */
+.upload-zone{border:1px dashed var(--red);background:var(--red-l);padding:20px;text-align:center;cursor:pointer;transition:all .13s;position:relative;}
+.upload-zone:hover{background:var(--red-m);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-zone-txt{font-family:var(--mono);font-size:12px;color:var(--red);}
+.upload-zone-sub{font-size:11px;color:var(--g5);margin-top:4px;}
+.upload-status{font-family:var(--mono);font-size:11px;padding:8px 12px;margin-top:8px;border:1px solid var(--border);display:none;align-items:center;gap:8px;}
+.upload-status.show{display:flex;}
+.upload-status.ok{border-color:#16a34a;color:#16a34a;background:#f0fdf4;}
+.upload-status.err{border-color:var(--red);color:var(--red);background:var(--red-l);}
 
-/* ── SETTINGS DRAWER ── */
-.drawer { position: fixed; top: var(--header-h); right: 0; bottom: 0; width: 320px; z-index: 300; background: white; border-left: 1px solid var(--border); transform: translateX(100%); transition: transform 0.2s ease; overflow-y: auto; padding: 24px; }
-.drawer.open { transform: translateX(0); }
-.drawer-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 20px; }
-.drawer-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+/* URL INPUT */
+.url-row{display:flex;gap:8px;}
+.url-row input{flex:1;padding:9px 12px;border:1px solid var(--border);font-size:13px;outline:none;transition:border-color .13s;}
+.url-row input:focus{border-color:var(--red);}
+.url-analyze-btn{padding:9px 16px;background:var(--red);border:none;color:white;font-size:12px;font-family:var(--mono);cursor:pointer;white-space:nowrap;}
+.url-analyze-btn:hover{background:var(--red-d);}
+.url-analyze-btn:disabled{opacity:.4;cursor:not-allowed;}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--gray-200); }
+.a-loading{display:none;align-items:center;gap:9px;padding:10px 0;font-family:var(--mono);font-size:11px;color:var(--g5);}
+.a-loading.show{display:flex;}
+.ai-prev{display:none;border:1px solid var(--border);background:var(--g0);padding:14px;margin-top:14px;}
+.ai-prev.show{display:block;}
+.prev-row{display:flex;gap:10px;font-family:var(--mono);font-size:11px;margin-bottom:5px;line-height:1.5;}
+.prev-k{color:var(--red);min-width:80px;flex-shrink:0;}
+.prev-v{color:var(--g7);}
+.divtxt{text-align:center;font-family:var(--mono);font-size:10px;color:var(--g3);padding:14px 0;position:relative;}
+.divtxt::before,.divtxt::after{content:'';position:absolute;top:50%;width:44%;height:1px;background:var(--border);}
+.divtxt::before{left:0;} .divtxt::after{right:0;}
+.section-sep{border:none;border-top:1px solid var(--border);margin:20px 0;}
 
-.hidden { display: none !important; }
+/* DRAWER */
+.drawer{position:fixed;top:var(--hh);right:0;bottom:0;width:320px;z-index:300;background:white;border-left:1px solid var(--border);transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;padding:24px;}
+.drawer.open{transform:translateX(0);}
+.drw-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--g4);margin-bottom:20px;}
+
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:var(--g2);}
+.hidden{display:none!important;}
+
+/* PROG ADD SECTION */
+.prog-add-wrap{border:1px solid var(--border);padding:16px;margin-bottom:8px;background:var(--g0);}
+.prog-add-ttl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g4);margin-bottom:12px;}
 </style>
 </head>
 <body>
-
-<header class="header">
-  <div class="header-logo">
-    <div class="logo-mark">OS</div>
-    현상설계 OS
-  </div>
-  <div class="header-right">
-    <span id="proj-count" style="font-family:var(--font-mono);font-size:11px;color:var(--gray-400)"></span>
+<header class="hdr">
+  <div class="logo"><div class="logo-sq">OS</div>현상설계 OS</div>
+  <div class="hdr-r">
+    <span id="pcnt" style="font-family:var(--mono);font-size:11px;color:var(--g4)"></span>
     <button class="btn btn-ghost btn-sm" onclick="toggleDrawer()">⚙ 설정</button>
-    <button class="btn btn-primary btn-sm" onclick="openAddModal()">+ 공모 추가</button>
+    <button class="btn btn-p btn-sm" onclick="openAdd()">+ 공모 추가</button>
   </div>
 </header>
 
 <div class="app">
   <aside class="sidebar">
-    <div class="sidebar-top">
-      <div class="sidebar-label">Projects</div>
-    </div>
-    <div id="proj-list"></div>
+    <div class="sb-top"><div class="sb-label">Projects</div></div>
+    <div id="plist"></div>
   </aside>
-  <main class="main" id="main">
-    <div class="empty" id="empty-state">
-      <div class="empty-icon"></div>
-      <div class="empty-text">공모 프로젝트가 없습니다</div>
-      <button class="btn btn-primary" onclick="openAddModal()">+ 첫 공모 추가하기</button>
+  <main class="main">
+    <div class="empty" id="empty">
+      <div class="empty-box">+</div>
+      <div class="empty-txt">공모 프로젝트가 없습니다</div>
+      <button class="btn btn-p" onclick="openAdd()">+ 첫 공모 추가하기</button>
     </div>
     <div id="detail" class="hidden"></div>
   </main>
 </div>
 
-<!-- Settings Drawer -->
+<!-- SETTINGS DRAWER -->
 <div class="drawer" id="drawer">
-  <div class="drawer-title">설정</div>
+  <div class="drw-ttl">설정</div>
   <div class="field">
     <label>Gemini API 키</label>
-    <input type="password" id="gemini-key-inp" placeholder="AIza..." />
-    <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray-400);margin-top:5px">localStorage에만 저장됩니다</div>
+    <input type="password" id="gkey-inp" placeholder="AIza..." />
+    <div style="font-family:var(--mono);font-size:10px;color:var(--g4);margin-top:5px">Google AI Studio 발급 · localStorage 저장</div>
   </div>
-  <button class="btn btn-primary" style="width:100%" onclick="saveKey()">저장</button>
-  <hr class="drawer-divider">
-  <div class="field">
-    <label>데이터 내보내기</label>
-    <button class="btn" style="width:100%" onclick="exportData()">JSON 내보내기</button>
-  </div>
-  <div class="field">
-    <label>데이터 가져오기</label>
-    <input type="file" id="import-file" accept=".json" onchange="importData(event)" style="font-size:12px;color:var(--gray-500)" />
-  </div>
-  <hr class="drawer-divider">
+  <button class="btn btn-p" style="width:100%;margin-bottom:8px" onclick="saveKey()">저장</button>
+  <button class="btn btn-sm" style="width:100%;margin-bottom:20px;font-family:var(--mono);font-size:11px" onclick="testGemini()">⚡ Gemini 연결 테스트</button>
+  <div id="gtest-result" style="display:none;font-family:var(--mono);font-size:11px;padding:10px;border:1px solid var(--border);margin-bottom:16px;white-space:pre-wrap;"></div>
+  <hr class="section-sep">
+  <div class="field"><label>데이터 내보내기</label><button class="btn" style="width:100%" onclick="exportData()">JSON 내보내기</button></div>
+  <div class="field"><label>데이터 가져오기</label><input type="file" id="imp-file" accept=".json" onchange="importData(event)" style="font-size:12px;color:var(--g5)" /></div>
+  <hr class="section-sep">
   <button class="btn btn-danger" style="width:100%" onclick="clearAll()">모든 데이터 초기화</button>
 </div>
 
-<!-- Add Project Modal -->
+<!-- ADD PROJECT MODAL -->
 <div class="overlay" id="add-modal">
   <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title"><div class="logo-mark" style="width:22px;height:22px;font-size:9px">+</div>새 공모 프로젝트</div>
-      <button class="modal-x" onclick="closeAddModal()">×</button>
+    <div class="modal-hd">
+      <div class="modal-ttl"><div class="logo-sq" style="width:22px;height:22px;font-size:9px">+</div>새 공모 프로젝트</div>
+      <button class="modal-x" onclick="closeAdd()">×</button>
     </div>
     <div class="modal-body">
+
+      <!-- STEP 1: 공모 페이지 URL -->
       <div class="field">
-        <label>공모 지침서 URL</label>
-        <input type="url" id="brief-url" placeholder="https://..." />
+        <label>공모 페이지 URL</label>
+        <div class="url-row">
+          <input type="url" id="brief-url" placeholder="https://공모 안내 페이지 URL..." />
+          <button class="url-analyze-btn" id="btn-url" onclick="analyzeURL()">⚡ Gemini 분석</button>
+        </div>
       </div>
-      <button class="analyze-btn" id="btn-url" onclick="analyzeURL()">⚡ URL → Gemini 자동 분석</button>
-      <div class="divider-txt">또는 텍스트 직접 붙여넣기</div>
+
+      <div class="divtxt">또는</div>
+
+      <!-- STEP 2: 파일 업로드 -->
       <div class="field">
-        <label>지침서 텍스트</label>
-        <textarea id="brief-txt" placeholder="공모 지침서 내용을 붙여넣으세요..."></textarea>
-      </div>
-      <button class="analyze-btn" id="btn-txt" onclick="analyzeText()">⚡ 텍스트 → Gemini 자동 분석</button>
-      <div class="a-loading" id="a-loading"><div class="spinner"></div><span>Gemini 분석 중...</span></div>
-      <div class="ai-preview-box" id="ai-preview"></div>
-      <div style="border-top:1px solid var(--border);padding-top:18px;margin-top:18px">
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray-400);margin-bottom:16px;letter-spacing:0.1em;text-transform:uppercase">수동 입력 / 결과 수정</div>
-        <div class="field"><label>공모명 *</label><input type="text" id="f-name" placeholder="예: 서울창업허브 관악 설계공모" /></div>
-        <div class="field-row">
-          <div class="field"><label>마감일 *</label><input type="date" id="f-deadline" /></div>
-          <div class="field"><label>발주처</label><input type="text" id="f-client" placeholder="예: SBA 서울산업진흥원" /></div>
+        <label>지침서 파일 업로드 <span style="font-weight:300;text-transform:none;letter-spacing:0">(PDF, DOCX만 지원 · HWP 불가)</span></label>
+        <div class="upload-zone">
+          <input type="file" id="brief-file" accept=".pdf,.docx" onchange="handleFile(event)" />
+          <div class="upload-zone-txt">📄 파일을 클릭하거나 드래그해서 올리세요</div>
+          <div class="upload-zone-sub">PDF · DOCX 지원 / 최대 20MB</div>
         </div>
-        <div class="field-row">
-          <div class="field"><label>연면적</label><input type="text" id="f-area" placeholder="예: 12,500㎡" /></div>
-          <div class="field"><label>공사비 예산</label><input type="text" id="f-budget" placeholder="예: 약 200억원" /></div>
-        </div>
-        <div class="field"><label>요구 프로그램 (줄바꿈 구분)</label><textarea id="f-program" style="min-height:70px" placeholder="창업지원실&#10;교육장&#10;공유오피스"></textarea></div>
-        <div class="field"><label>제출물 규격</label><textarea id="f-deliverables" style="min-height:60px" placeholder="A1 패널 5매, 설계설명서 A4 20p..."></textarea></div>
-        <div class="field"><label>심사위원 / 특이사항</label><textarea id="f-notes" style="min-height:60px" placeholder="심사 전략, 가점 요인..."></textarea></div>
+        <div class="upload-status" id="upload-status"></div>
       </div>
+
+      <div class="a-loading" id="a-loading"><div class="spinner"></div><span id="a-loading-txt">Gemini 분석 중...</span></div>
+      <div class="ai-prev" id="ai-prev"></div>
+
+      <hr class="section-sep">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--g4);margin-bottom:16px;letter-spacing:.1em;text-transform:uppercase">공모 정보 입력 (자동완성 또는 수동 입력)</div>
+
+      <!-- 기본 정보 -->
+      <div class="field"><label>공모명 *</label><input type="text" id="f-name" placeholder="예: 서울창업허브 관악 설계공모" /></div>
+      <div class="field-row" style="margin-bottom:18px">
+        <div class="field" style="margin-bottom:0"><label>마감일 *</label><input type="date" id="f-deadline" /></div>
+        <div class="field" style="margin-bottom:0"><label>발주처</label><input type="text" id="f-client" placeholder="예: SBA 서울산업진흥원" /></div>
+      </div>
+      <div class="field-row" style="margin-bottom:18px">
+        <div class="field" style="margin-bottom:0"><label>사이트 위치</label><input type="text" id="f-location" placeholder="예: 서울시 관악구 봉천동" /></div>
+        <div class="field" style="margin-bottom:0"><label>대지면적</label><input type="text" id="f-site-area" placeholder="예: 3,200㎡" /></div>
+      </div>
+      <div class="field-row3" style="margin-bottom:18px">
+        <div class="field" style="margin-bottom:0"><label>건축물 주 용도</label><input type="text" id="f-usage" placeholder="예: 업무시설" /></div>
+        <div class="field" style="margin-bottom:0"><label>연면적</label><input type="text" id="f-area" placeholder="예: 12,500㎡" /></div>
+        <div class="field" style="margin-bottom:0"><label>예정 설계비</label><input type="text" id="f-design-fee" placeholder="예: 약 5억원" /></div>
+      </div>
+      <div class="field-row" style="margin-bottom:18px">
+        <div class="field" style="margin-bottom:0"><label>예정 공사비</label><input type="text" id="f-budget" placeholder="예: 약 200억원" /></div>
+        <div class="field" style="margin-bottom:0"><label>제출물 규격</label><input type="text" id="f-deliverables" placeholder="예: A1 패널 5매, 설명서 A4 20p" /></div>
+      </div>
+      <div class="field"><label>심사위원 / 특이사항</label><textarea id="f-notes" style="min-height:60px" placeholder="심사 전략, 가점 요인, 주의사항..."></textarea></div>
+
+      <!-- 요구 프로그램 -->
+      <hr class="section-sep">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--g4);margin-bottom:14px;letter-spacing:.1em;text-transform:uppercase">요구 프로그램</div>
+      <div class="prog-add-wrap">
+        <div class="prog-add-ttl">항목 추가</div>
+        <div class="prog-input-row">
+          <div><label style="font-family:var(--mono);font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">대분류</label><input type="text" id="pi-cat" placeholder="예: 창업지원" /></div>
+          <div><label style="font-family:var(--mono);font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">프로그램명</label><input type="text" id="pi-prog" placeholder="예: 창업지원실" /></div>
+          <div><label style="font-family:var(--mono);font-size:10px;color:var(--g4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:block">면적 (㎡)</label><input type="number" id="pi-area" placeholder="예: 500" /></div>
+          <button class="add-btn" onclick="addProgItem()">+ 추가</button>
+        </div>
+      </div>
+      <div id="prog-table-wrap">
+        <table class="prog-table" id="prog-table" style="display:none">
+          <thead><tr><th>대분류</th><th>프로그램</th><th>면적 (㎡)</th><th></th></tr></thead>
+          <tbody id="prog-tbody"></tbody>
+        </table>
+        <div class="prog-total" id="prog-total" style="display:none">합계 <span id="prog-sum">0</span> ㎡</div>
+      </div>
+
     </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeAddModal()">취소</button>
-      <button class="btn btn-primary" onclick="saveProject()">프로젝트 생성</button>
+    <div class="modal-ft">
+      <button class="btn" onclick="closeAdd()">취소</button>
+      <button class="btn btn-p" onclick="saveProject()">프로젝트 생성</button>
     </div>
   </div>
 </div>
 
 <script>
+// ── PDF.js worker ──────────────────────────────────────────────────
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
 // ── CONFIG ─────────────────────────────────────────────────────────
 const GEMINI_KEY_DEFAULT = 'AIzaSyDXKPWm0C3uSa7NQWjSYz8YU30CYMeeYZQ';
 
 const STAGES = [
-  { key:'strategy',   label:'전략·리서치', short:'01' },
-  { key:'concept',    label:'분석·컨셉',   short:'02' },
-  { key:'design',     label:'디자인 발전', short:'03' },
-  { key:'production', label:'성과물 제작', short:'04' },
-  { key:'submission', label:'제출·심사',   short:'05' },
+  {key:'strategy', label:'전략·리서치', short:'01'},
+  {key:'concept',  label:'분석·컨셉',   short:'02'},
+  {key:'design',   label:'디자인 발전', short:'03'},
+  {key:'production',label:'성과물 제작',short:'04'},
+  {key:'submission',label:'제출·심사',  short:'05'},
 ];
 
-const DEFAULT_CHECKS = {
+const CHECKS = {
   strategy:[
-    {text:'공모 지침서(Brief) 정독 완료',sub:'목적·연면적·예산·프로그램 파악'},
+    {text:'공모 지침서 정독 완료',sub:'목적·연면적·예산·프로그램 파악'},
     {text:'가점/감점 요인 별도 정리',sub:'제출물 규격 체크 포함'},
     {text:'마감 역산 스케줄 작성',sub:'CG·패널·모형 제작 기간 포함'},
     {text:'심사위원 성향 리서치',sub:'과거 작업물·심사평·선호 가치 파악'},
@@ -447,53 +448,345 @@ const AI_TASKS = {
 };
 
 // ── STATE ──────────────────────────────────────────────────────────
-let projects = JSON.parse(localStorage.getItem('comp_os_v1') || '[]');
-let currentId = null;
-let currentStage = 0;
+let projects = JSON.parse(localStorage.getItem('cos_v3') || '[]');
+let curId = null, curStage = 0;
+let modalProgs = []; // 모달에서 입력 중인 프로그램 목록
 
-const save = () => localStorage.setItem('comp_os_v1', JSON.stringify(projects));
+const save = () => localStorage.setItem('cos_v3', JSON.stringify(projects));
 const getKey = () => localStorage.getItem('gemini_key') || GEMINI_KEY_DEFAULT;
 const $ = id => document.getElementById(id);
 
+// ── GEMINI API ─────────────────────────────────────────────────────
+async function geminiCall(prompt, useSearch = false) {
+  const key = getKey();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+  const body = { contents: [{ parts: [{ text: prompt }] }] };
+  if (useSearch) body.tools = [{ googleSearch: {} }];
+
+  dbg(`[Gemini] calling... useSearch=${useSearch}`);
+  dbg(`[Gemini] URL: ${url.replace(key, key.slice(0,8)+'...')}`);
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  const data = await res.json();
+  dbg(`[Gemini] status: ${res.status}`);
+
+  if (!res.ok) {
+    const msg = data.error?.message || JSON.stringify(data);
+    dbg(`[Gemini] ERROR: ${msg}`);
+    throw new Error(`Gemini API 오류 (${res.status}): ${msg}`);
+  }
+
+  const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+  dbg(`[Gemini] OK, ${text.length}자 응답`);
+  return text;
+}
+
+// Gemini 연결 테스트
+async function testGemini() {
+  const el = $('gtest-result');
+  el.style.display = 'block';
+  el.style.borderColor = 'var(--g3)';
+  el.style.color = 'var(--g5)';
+  el.textContent = '테스트 중...';
+  try {
+    const result = await geminiCall('안녕하세요. "연결 성공"이라고만 짧게 답해주세요.');
+    el.style.borderColor = '#16a34a';
+    el.style.color = '#16a34a';
+    el.style.background = '#f0fdf4';
+    el.textContent = '✓ 연결 성공!\n응답: ' + result.slice(0, 100);
+  } catch(e) {
+    el.style.borderColor = 'var(--red)';
+    el.style.color = 'var(--red)';
+    el.style.background = 'var(--red-l)';
+    el.textContent = '✗ 실패\n' + e.message;
+  }
+}
+
+// ── FILE HANDLING ──────────────────────────────────────────────────
+async function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const status = $('upload-status');
+  status.className = 'upload-status show';
+  status.innerHTML = `<div class="spinner"></div> <span>${file.name} 읽는 중...</span>`;
+
+  try {
+    let text = '';
+    if (file.name.endsWith('.pdf')) {
+      text = await extractPDF(file);
+    } else if (file.name.endsWith('.docx')) {
+      text = await extractDOCX(file);
+    } else {
+      throw new Error('PDF 또는 DOCX 파일만 지원합니다.');
+    }
+
+    if (text.length < 50) throw new Error('파일에서 텍스트를 추출할 수 없습니다. 스캔 이미지 PDF일 수 있습니다.');
+
+    status.className = 'upload-status show ok';
+    status.innerHTML = `✓ ${file.name} (${text.length.toLocaleString()}자 추출) — Gemini 분석 시작`;
+
+    await analyzeText(text);
+
+  } catch(e) {
+    status.className = 'upload-status show err';
+    status.innerHTML = '✗ ' + e.message;
+  }
+}
+
+async function extractPDF(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let text = '';
+  for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+async function extractDOCX(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  return result.value;
+}
+
+// ── ANALYZE ────────────────────────────────────────────────────────
+const EXTRACT_PROMPT = text => `다음은 건축 현상설계 공모 지침서입니다. 아래 JSON 형식으로만 응답하세요. JSON 외 텍스트는 절대 포함하지 마세요.
+
+{
+  "name": "공모명",
+  "deadline": "YYYY-MM-DD 형식 마감일 (없으면 빈 문자열)",
+  "client": "발주처 기관명",
+  "location": "사이트 위치 주소",
+  "site_area": "대지면적 (단위 포함)",
+  "usage": "건축물 주 용도",
+  "area": "연면적 (단위 포함)",
+  "design_fee": "예정 설계비",
+  "budget": "예정 공사비",
+  "deliverables": "제출물 규격 요약",
+  "key_notes": "심사 가점/감점/특이사항 1~2줄",
+  "programs": [
+    {"category": "대분류", "name": "프로그램명", "area": 숫자만}
+  ]
+}
+
+지침서 내용:
+${text.slice(0, 12000)}`;
+
+async function analyzeURL() {
+  const url = $('brief-url').value.trim();
+  if (!url) { alert('공모 페이지 URL을 입력해주세요.'); return; }
+  setALoading(true, 'URL 페이지 분석 중...');
+  try {
+    const raw = await geminiCall(
+      `다음 URL의 건축 현상설계 공모 페이지를 분석해서 공모 정보를 추출하세요.\nURL: ${url}\n\n${EXTRACT_PROMPT('[URL 페이지에서 공모 정보 추출]')}`,
+      true
+    );
+    fillForm(raw);
+  } catch(e) {
+    alert(e.message);
+  }
+  setALoading(false);
+}
+
+async function analyzeText(text) {
+  setALoading(true, 'Gemini가 지침서 분석 중...');
+  try {
+    const raw = await geminiCall(EXTRACT_PROMPT(text));
+    fillForm(raw);
+  } catch(e) {
+    alert(e.message);
+  }
+  setALoading(false);
+  const status = $('upload-status');
+  if (status.classList.contains('ok')) {
+    status.innerHTML = status.innerHTML.replace('— Gemini 분석 시작', '— ✓ 분석 완료');
+  }
+}
+
+function setALoading(on, txt = '') {
+  $('a-loading').classList.toggle('show', on);
+  if (txt) $('a-loading-txt').textContent = txt;
+  $('btn-url').disabled = on;
+}
+
+function fillForm(raw) {
+  try {
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const d = JSON.parse(cleaned);
+    const set = (id, val) => { if (val) $(id).value = val; };
+    set('f-name', d.name);
+    set('f-deadline', d.deadline);
+    set('f-client', d.client);
+    set('f-location', d.location);
+    set('f-site-area', d.site_area);
+    set('f-usage', d.usage);
+    set('f-area', d.area);
+    set('f-design-fee', d.design_fee);
+    set('f-budget', d.budget);
+    set('f-deliverables', d.deliverables);
+    set('f-notes', d.key_notes);
+
+    // Programs
+    if (Array.isArray(d.programs) && d.programs.length > 0) {
+      modalProgs = d.programs.map(p => ({
+        category: p.category || '',
+        name: p.name || '',
+        area: Number(p.area) || 0
+      }));
+      renderModalProgTable();
+    }
+
+    // Preview
+    const prev = $('ai-prev');
+    prev.innerHTML = [
+      d.name && `<div class="prev-row"><span class="prev-k">공모명</span><span class="prev-v">${d.name}</span></div>`,
+      d.deadline && `<div class="prev-row"><span class="prev-k">마감일</span><span class="prev-v">${d.deadline}</span></div>`,
+      d.client && `<div class="prev-row"><span class="prev-k">발주처</span><span class="prev-v">${d.client}</span></div>`,
+      d.location && `<div class="prev-row"><span class="prev-k">위치</span><span class="prev-v">${d.location}</span></div>`,
+      d.area && `<div class="prev-row"><span class="prev-k">연면적</span><span class="prev-v">${d.area}</span></div>`,
+      d.programs?.length && `<div class="prev-row"><span class="prev-k">프로그램</span><span class="prev-v">${d.programs.length}개 항목 추출됨</span></div>`,
+      d.key_notes && `<div class="prev-row"><span class="prev-k">특이사항</span><span class="prev-v">${d.key_notes}</span></div>`,
+    ].filter(Boolean).join('');
+    prev.classList.add('show');
+
+  } catch(e) {
+    dbg(`[fillForm] JSON 파싱 오류: ${e.message}`);
+    dbg(`[fillForm] raw: ${raw.slice(0, 300)}`);
+    alert('정보 파싱 오류가 발생했습니다. 수동으로 입력해주세요.\n\n오류: ' + e.message);
+  }
+}
+
+// ── PROGRAM TABLE (MODAL) ──────────────────────────────────────────
+function addProgItem() {
+  const cat = $('pi-cat').value.trim();
+  const prog = $('pi-prog').value.trim();
+  const area = parseFloat($('pi-area').value) || 0;
+  if (!prog) { alert('프로그램명을 입력해주세요.'); return; }
+  modalProgs.push({ category: cat, name: prog, area });
+  $('pi-cat').value = ''; $('pi-prog').value = ''; $('pi-area').value = '';
+  $('pi-prog').focus();
+  renderModalProgTable();
+}
+
+// Enter key on area input
+document.addEventListener('DOMContentLoaded', () => {
+  const areaInp = $('pi-area');
+  if (areaInp) areaInp.addEventListener('keydown', e => { if (e.key === 'Enter') addProgItem(); });
+  const progInp = $('pi-prog');
+  if (progInp) progInp.addEventListener('keydown', e => { if (e.key === 'Enter') { $('pi-area').focus(); } });
+});
+
+function deleteProgItem(i) {
+  modalProgs.splice(i, 1);
+  renderModalProgTable();
+}
+
+function renderModalProgTable() {
+  const table = $('prog-table');
+  const tbody = $('prog-tbody');
+  const totalEl = $('prog-total');
+  const sumEl = $('prog-sum');
+
+  if (!modalProgs.length) {
+    table.style.display = 'none';
+    totalEl.style.display = 'none';
+    return;
+  }
+
+  table.style.display = 'table';
+  totalEl.style.display = 'flex';
+
+  tbody.innerHTML = modalProgs.map((p, i) => `
+    <tr>
+      <td style="color:var(--g5);font-size:12px">${p.category || '—'}</td>
+      <td>${p.name}</td>
+      <td>${p.area ? p.area.toLocaleString() : '—'}</td>
+      <td><button class="del-btn" onclick="deleteProgItem(${i})">×</button></td>
+    </tr>`).join('');
+
+  const total = modalProgs.reduce((s, p) => s + (p.area || 0), 0);
+  sumEl.textContent = total.toLocaleString();
+}
+
+// ── SAVE PROJECT ───────────────────────────────────────────────────
+function saveProject() {
+  const name = $('f-name').value.trim();
+  if (!name) { alert('공모명을 입력해주세요.'); return; }
+  const id = 'p_' + Date.now();
+  const checklists = {};
+  STAGES.forEach(s => { checklists[s.key] = CHECKS[s.key].map(c => ({...c, done:false})); });
+
+  projects.unshift({
+    id, name,
+    deadline: $('f-deadline').value,
+    client: $('f-client').value,
+    location: $('f-location').value,
+    siteArea: $('f-site-area').value,
+    usage: $('f-usage').value,
+    area: $('f-area').value,
+    designFee: $('f-design-fee').value,
+    budget: $('f-budget').value,
+    deliverables: $('f-deliverables').value,
+    notes: $('f-notes').value,
+    programs: [...modalProgs],
+    checklists,
+    stageNotes: {},
+    createdAt: new Date().toISOString()
+  });
+
+  save();
+  closeAdd();
+  renderSidebar();
+  selectProj(id);
+}
+
 // ── SIDEBAR ────────────────────────────────────────────────────────
 function renderSidebar() {
-  const list = $('proj-list');
-  $('proj-count').textContent = projects.length ? `${projects.length}개` : '';
+  const list = $('plist');
+  $('pcnt').textContent = projects.length ? `${projects.length}개` : '';
   if (!projects.length) {
-    list.innerHTML = '<div style="padding:12px 16px;font-size:12px;color:var(--gray-300);font-family:var(--font-mono)">—</div>';
+    list.innerHTML = '<div style="padding:12px 16px;font-size:12px;color:var(--g3);font-family:var(--mono)">—</div>';
     return;
   }
   list.innerHTML = projects.map(p => {
     const days = daysLeft(p.deadline);
-    const bc = days===null?'d-ok':days<0?'d-danger':days<=7?'d-warn':'d-ok';
+    const bc = days===null?'db-ok':days<0?'db-danger':days<=7?'db-warn':'db-ok';
     const bt = days===null?'—':days<0?`D+${Math.abs(days)}`:days===0?'D-Day':`D-${days}`;
     const pct = calcPct(p);
-    const act = p.id===currentId?' active':'';
-    return `<div class="proj-item${act}" onclick="select('${p.id}')">
-      <div class="proj-item-name">${p.name}</div>
-      <div class="proj-item-meta"><span class="d-badge ${bc}">${bt}</span><span class="d-pct">${pct}%</span></div>
+    const act = p.id===curId?' active':'';
+    return `<div class="pi${act}" onclick="selectProj('${p.id}')">
+      <div class="pi-name">${p.name}</div>
+      <div class="pi-meta"><span class="db ${bc}">${bt}</span><span class="dp">${pct}%</span></div>
     </div>`;
   }).join('');
 }
 
 // ── DETAIL ─────────────────────────────────────────────────────────
-function select(id) {
-  currentId = id; currentStage = 0;
+function selectProj(id) {
+  curId = id; curStage = 0;
   renderSidebar();
-  $('empty-state').classList.add('hidden');
+  $('empty').classList.add('hidden');
   $('detail').classList.remove('hidden');
   render();
 }
 
 function render() {
-  const p = projects.find(x => x.id === currentId);
+  const p = projects.find(x => x.id === curId);
   if (!p) return;
+
   const days = daysLeft(p.deadline);
   const dc = days===null?'ok':days<0?'danger':days<=14?'warn':'ok';
   const dt = days===null?'마감일 미설정':days<0?`마감 ${Math.abs(days)}일 경과`:days===0?'D-Day!':`D-${days}`;
   const pct = calcPct(p);
-  const progs = (p.program||'').split('\n').filter(Boolean);
-  const sk = STAGES[currentStage].key;
+  const sk = STAGES[curStage].key;
   const checks = p.checklists?.[sk] || [];
   const tasks = AI_TASKS[sk] || [];
 
@@ -501,84 +794,107 @@ function render() {
     const items = p.checklists?.[s.key]||[];
     const done = items.filter(x=>x.done).length;
     const all = items.length;
-    const cls = i===currentStage?' active':(done===all&&all>0?' s-done':'');
-    return `<button class="stage-tab${cls}" onclick="switchStage(${i})">${s.short} ${s.label}${all?` (${done}/${all})`:''}</button>`;
+    const cls = i===curStage?' active':(done===all&&all>0?' s-done':'');
+    return `<button class="stab${cls}" onclick="switchStage(${i})">${s.short} ${s.label}${all?` (${done}/${all})`:''}</button>`;
   }).join('');
 
   const checkHTML = checks.map((item,i)=>`
-    <div class="check-item" onclick="toggleCheck('${sk}',${i})">
-      <div class="checkbox${item.done?' checked':''}"></div>
+    <div class="chk-item" onclick="toggleCheck('${sk}',${i})">
+      <div class="chkbox${item.done?' on':''}"></div>
       <div>
-        <div class="check-text${item.done?' done':''}">${item.text}</div>
-        ${item.sub?`<div class="check-sub">${item.sub}</div>`:''}
+        <div class="chk-txt${item.done?' done':''}">${item.text}</div>
+        ${item.sub?`<div class="chk-sub">${item.sub}</div>`:''}
       </div>
     </div>`).join('');
 
-  const shortcutsHTML = tasks.map(t=>`
-    <button class="ai-shortcut" onclick="runTask('${t.label.replace(/'/g,"\\'")}','${t.type}','${sk}')">${t.label}</button>`).join('');
+  const shortcutsHTML = tasks.map(t=>
+    `<button class="ai-sc" onclick="runTask('${t.label.replace(/'/g,"\\'")}','${t.type}','${sk}')">${t.label}</button>`
+  ).join('');
+
+  // Program table
+  const progs = p.programs || [];
+  const progHTML = progs.length ? `
+    <div class="section">
+      <div class="sec-hdr">
+        <div class="sec-ttl">요구 프로그램</div>
+        <button class="btn btn-ghost btn-sm" onclick="editProgs('${p.id}')">편집</button>
+      </div>
+      <table class="prog-table">
+        <thead><tr><th>대분류</th><th>프로그램</th><th>면적 (㎡)</th></tr></thead>
+        <tbody>${progs.map(pg=>`<tr>
+          <td style="color:var(--g5);font-size:12px">${pg.category||'—'}</td>
+          <td>${pg.name}</td>
+          <td>${pg.area?pg.area.toLocaleString():'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+      <div class="prog-total">합계 <span style="color:var(--red);font-weight:500;margin-left:8px">${progs.reduce((s,p)=>s+(p.area||0),0).toLocaleString()}</span> ㎡</div>
+    </div>` : `
+    <div class="section">
+      <div class="sec-hdr">
+        <div class="sec-ttl">요구 프로그램</div>
+        <button class="btn btn-outline btn-sm" onclick="editProgs('${p.id}')">+ 입력</button>
+      </div>
+      <div style="padding:16px;font-size:13px;color:var(--g4);border:1px solid var(--border);text-align:center">프로그램 정보 없음</div>
+    </div>`;
 
   $('detail').innerHTML = `
     <div class="section">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
         <div>
           <div class="proj-title">${p.name}</div>
-          <div class="proj-sub">${p.client||'발주처 미입력'}</div>
+          <div class="proj-sub">${p.client||'발주처 미입력'}${p.location?` · ${p.location}`:''}</div>
         </div>
-        <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">삭제</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProj('${p.id}')">삭제</button>
       </div>
       <div class="tags">
-        ${p.area?`<span class="tag tag-red">${p.area}</span>`:''}
-        ${p.budget?`<span class="tag tag-blue">${p.budget}</span>`:''}
-        ${p.deliverables?`<span class="tag">${p.deliverables.slice(0,30)}${p.deliverables.length>30?'…':''}</span>`:''}
+        ${p.area?`<span class="tag tag-r">${p.area}</span>`:''}
+        ${p.siteArea?`<span class="tag">대지 ${p.siteArea}</span>`:''}
+        ${p.budget?`<span class="tag tag-b">${p.budget}</span>`:''}
+        ${p.designFee?`<span class="tag">설계비 ${p.designFee}</span>`:''}
+        ${p.usage?`<span class="tag">${p.usage}</span>`:''}
       </div>
     </div>
 
-    <div class="countdown-bar section">
+    <div class="cd-bar section">
       <div class="cd-cell">
-        <div class="cd-label">Deadline</div>
-        <div class="cd-value ${dc}">${dt}</div>
+        <div class="cd-lbl">Deadline</div>
+        <div class="cd-val ${dc}">${dt}</div>
       </div>
       <div class="cd-cell" style="flex:2">
-        <div class="cd-label">전체 진행률 — ${pct}%</div>
-        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="cd-lbl">전체 진행률 — ${pct}%</div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
       </div>
       <div class="cd-cell">
-        <div class="cd-label">마감일</div>
-        <div style="font-family:var(--font-mono);font-size:13px;font-weight:500">${p.deadline?new Date(p.deadline).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}):'—'}</div>
+        <div class="cd-lbl">마감일</div>
+        <div style="font-family:var(--mono);font-size:13px;font-weight:500">${p.deadline?new Date(p.deadline).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}):'—'}</div>
       </div>
     </div>
 
-    ${(p.area||p.budget||p.deliverables||p.notes)?`
     <div class="info-grid section">
-      ${p.area?`<div class="info-cell"><div class="info-label">연면적</div><div class="info-value" style="font-family:var(--font-mono)">${p.area}</div></div>`:''}
-      ${p.budget?`<div class="info-cell"><div class="info-label">공사비 예산</div><div class="info-value" style="font-family:var(--font-mono)">${p.budget}</div></div>`:''}
-      ${p.notes?`<div class="info-cell" style="grid-column:span 2"><div class="info-label">특이사항</div><div class="info-value">${p.notes}</div></div>`:''}
-    </div>`:''}
+      ${p.location?`<div class="ic"><div class="ic-lbl">사이트 위치</div><div class="ic-val" style="font-size:12px">${p.location}</div></div>`:''}
+      ${p.siteArea?`<div class="ic"><div class="ic-lbl">대지면적</div><div class="ic-val" style="font-family:var(--mono)">${p.siteArea}</div></div>`:''}
+      ${p.usage?`<div class="ic"><div class="ic-lbl">건축물 주 용도</div><div class="ic-val">${p.usage}</div></div>`:''}
+      ${p.area?`<div class="ic"><div class="ic-lbl">연면적</div><div class="ic-val" style="font-family:var(--mono)">${p.area}</div></div>`:''}
+      ${p.designFee?`<div class="ic"><div class="ic-lbl">예정 설계비</div><div class="ic-val" style="font-family:var(--mono)">${p.designFee}</div></div>`:''}
+      ${p.budget?`<div class="ic"><div class="ic-lbl">예정 공사비</div><div class="ic-val" style="font-family:var(--mono)">${p.budget}</div></div>`:''}
+      ${p.deliverables?`<div class="ic" style="grid-column:span 2"><div class="ic-lbl">제출물 규격</div><div class="ic-val" style="font-size:12px">${p.deliverables}</div></div>`:''}
+    </div>
 
-    ${progs.length?`
-    <div class="section">
-      <div class="section-title" style="margin-bottom:10px">Required Program</div>
-      ${progs.map(pg=>`<div class="prog-item"><div class="prog-dot"></div>${pg}</div>`).join('')}
-    </div>`:''}
+    ${progHTML}
 
     <div class="stage-tabs">${tabs}</div>
 
     <!-- AI PANEL -->
     <div class="ai-panel section">
-      <div class="ai-panel-head">
-        <div class="ai-panel-title">
-          AI 업무 지원
-          <span class="ai-badge badge-g">Gemini</span>
-          <span style="color:var(--gray-300);font-size:10px">→</span>
-          <span class="ai-badge badge-c">Claude</span>
-        </div>
+      <div class="ai-ph">
+        <div class="ai-pt">AI 업무 지원 <span class="ai-bw bg">Gemini</span> <span style="color:var(--g3);font-size:10px">→</span> <span class="ai-bw bc">Claude</span></div>
       </div>
       <div class="ai-body">
-        <div class="ai-desc">Gemini가 인터넷을 조사하고 초안을 작성하면, Claude가 건축 실무 관점으로 분석·정제합니다</div>
+        <div class="ai-desc">Gemini가 인터넷을 조사해 초안을 작성하고, Claude가 건축 실무 관점으로 분석·정제합니다</div>
         <div class="ai-shortcuts">${shortcutsHTML}</div>
         <div class="ai-row">
-          <input class="ai-input" id="ai-inp" placeholder="직접 요청 입력 후 Enter..." onkeydown="if(event.key==='Enter')runCustom()" />
-          <select class="ai-type" id="ai-type">
+          <input class="ai-inp" id="ai-inp" placeholder="직접 요청 입력 후 Enter..." onkeydown="if(event.key==='Enter')runCustom()" />
+          <select class="ai-sel" id="ai-sel">
             <option value="research">리서치</option>
             <option value="casestudy">사례조사</option>
             <option value="brainstorm">브레인스톰</option>
@@ -587,287 +903,230 @@ function render() {
           </select>
           <button class="ai-run" onclick="runCustom()">▶ 실행</button>
         </div>
-        <div class="ai-loading" id="ai-loading">
-          <div class="spinner"></div>
-          <span id="ai-loading-txt">처리 중...</span>
-        </div>
-        <div class="ai-output" id="ai-output">
-          <div class="step-indicator">
-            <div class="step-dot" id="sd1"></div><span class="step-label" id="sl1">① Gemini 조사</span>
-            <span class="step-arrow">→</span>
-            <div class="step-dot" id="sd2"></div><span class="step-label" id="sl2">② Claude 분석</span>
+        <div class="ai-loading" id="ai-loading"><div class="spinner"></div><span id="ai-ltxt">처리 중...</span></div>
+        <div class="ai-out" id="ai-out">
+          <div class="step-ind">
+            <div class="sdot" id="sd1"></div><span class="slbl" id="sl1">① Gemini 조사</span>
+            <span style="color:var(--g3)">→</span>
+            <div class="sdot" id="sd2"></div><span class="slbl" id="sl2">② Claude 분석</span>
           </div>
-          <div id="ai-out-inner"></div>
+          <div id="ai-inner"></div>
         </div>
+        <span class="debug-toggle" onclick="toggleDebug()">🔧 디버그 로그 보기</span>
+        <div class="debug-panel" id="debug-panel"></div>
       </div>
     </div>
 
     <!-- CHECKLIST -->
     <div class="section">
-      <div class="section-header">
-        <div class="section-title">${STAGES[currentStage].label} 체크리스트</div>
+      <div class="sec-hdr">
+        <div class="sec-ttl">${STAGES[curStage].label} 체크리스트</div>
         <button class="btn btn-ghost btn-sm" onclick="addCheck('${sk}')">+ 추가</button>
       </div>
-      <div class="check-list">${checkHTML||'<div style="padding:12px 0;font-size:12px;color:var(--gray-400)">항목 없음</div>'}</div>
+      <div class="chk-list">${checkHTML||'<div style="padding:12px 0;font-size:12px;color:var(--g4)">항목 없음</div>'}</div>
     </div>
 
     <!-- NOTES -->
     <div class="section">
-      <div class="section-title" style="margin-bottom:10px">전략 메모</div>
-      <textarea class="notes-area" id="stage-notes" placeholder="이 단계의 전략, 아이디어, AI 결과 요약..."
+      <div class="sec-ttl" style="margin-bottom:10px">전략 메모</div>
+      <textarea class="notes-area" id="snotes" placeholder="이 단계의 전략, 아이디어, AI 결과 요약..."
         onblur="saveNote(this.value)">${p.stageNotes?.[sk]||''}</textarea>
     </div>
   `;
 }
 
+// ── DEBUG ──────────────────────────────────────────────────────────
+let debugLog = '';
+function dbg(msg) {
+  const ts = new Date().toLocaleTimeString('ko-KR', {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  debugLog += `[${ts}] ${msg}\n`;
+  const el = $('debug-panel');
+  if (el) { el.textContent = debugLog; el.scrollTop = el.scrollHeight; }
+}
+function toggleDebug() {
+  const el = $('debug-panel');
+  if (el) el.classList.toggle('show');
+}
+
 // ── AI PIPELINE ────────────────────────────────────────────────────
 function buildCtx(p, sk) {
-  return `공모명: ${p.name}\n발주처: ${p.client||'—'}\n연면적: ${p.area||'—'}\n공사비: ${p.budget||'—'}\n마감일: ${p.deadline||'—'}\n요구 프로그램: ${p.program||'—'}\n특이사항: ${p.notes||'—'}\n현재 단계: ${STAGES.find(s=>s.key===sk)?.label||'—'}`;
+  return `공모명: ${p.name}\n발주처: ${p.client||'—'}\n위치: ${p.location||'—'}\n연면적: ${p.area||'—'}\n공사비: ${p.budget||'—'}\n마감일: ${p.deadline||'—'}\n현재단계: ${STAGES.find(s=>s.key===sk)?.label||'—'}`;
 }
 
 function gPrompt(label, type, ctx) {
   const base = `아래는 건축 현상설계 공모 정보입니다:\n\n${ctx}\n\n`;
   const map = {
-    research: `${base}[리서치] ${label}\n\n최신 정보를 조사하고 구체적인 사실·수치·사례를 포함해 정리해주세요. 가능하면 출처를 명시해주세요.`,
-    casestudy: `${base}[사례조사] ${label}\n\n유사한 국내외 건축 사례 3~5개를 조사해 각각: 프로젝트명, 위치, 규모, 핵심 디자인 전략, 이 공모에의 시사점을 정리해주세요.`,
-    brainstorm: `${base}[브레인스톰] ${label}\n\n창의적 아이디어를 다양하게 제안해주세요. 형식에 얽매이지 말고 최대한 많은 방향을 제시해주세요.`,
-    analysis: `${base}[분석] ${label}\n\n핵심 포인트, 주의사항, 전략적 판단 사항을 실무 관점에서 정리해주세요.`,
-    draft: `${base}[초안 작성] ${label}\n\n실제 제출에 활용 가능한 수준으로 구체적으로 작성해주세요.`,
+    research: `${base}[리서치] ${label}\n\n최신 정보를 조사하고 구체적 사실·수치·사례를 포함해 정리하세요. 출처를 명시하세요.`,
+    casestudy: `${base}[사례조사] ${label}\n\n유사 국내외 건축 사례 3~5개를 조사해 각각 프로젝트명, 위치, 규모, 핵심 디자인 전략, 이 공모에의 시사점을 정리하세요.`,
+    brainstorm: `${base}[브레인스톰] ${label}\n\n창의적 아이디어를 다양하게 제안하세요. 형식에 얽매이지 말고 최대한 많은 방향을 제시하세요.`,
+    analysis: `${base}[분석] ${label}\n\n핵심 포인트, 주의사항, 전략적 판단 사항을 실무 관점에서 정리하세요.`,
+    draft: `${base}[초안 작성] ${label}\n\n실제 제출에 활용 가능한 수준으로 구체적으로 작성하세요.`,
   };
   return map[type] || map.analysis;
 }
 
-function cPrompt(label, ctx, geminiOut) {
+function cPrompt(label, ctx, gOut) {
   return `당신은 건축 현상설계 전문 컨설턴트입니다.
 
 [공모 정보]
 ${ctx}
 
 [Gemini 조사·초안]
-${geminiOut}
+${gOut}
 
 [요청]
-위 내용을 바탕으로:
-1. 건축 실무 관점에서 Gemini 결과의 핵심을 검토하고 보완점을 지적하세요
+1. 건축 실무 관점에서 Gemini 결과를 검토하고 보완점을 지적하세요
 2. "${label}"에 대해 실제 활용 가능한 최종 결과물을 정리하세요
 3. 이 공모의 경쟁력을 높이는 핵심 인사이트 1~2가지를 추가하세요
 
-간결하고 실용적으로. 헤더(#)는 쓰지 말고 [섹션명] 형식으로 구분하세요.`;
+간결하고 실용적으로. [섹션명] 형식으로 구분하세요.`;
 }
 
 async function runTask(label, type, sk) {
-  const p = projects.find(x => x.id === currentId);
+  const p = projects.find(x => x.id === curId);
   await pipeline(label, type, buildCtx(p, sk));
 }
 
 async function runCustom() {
   const input = $('ai-inp').value.trim();
   if (!input) return;
-  const p = projects.find(x => x.id === currentId);
-  const type = $('ai-type').value;
-  await pipeline(input, type, buildCtx(p, STAGES[currentStage].key));
+  const p = projects.find(x => x.id === curId);
+  await pipeline(input, $('ai-sel').value, buildCtx(p, STAGES[curStage].key));
 }
 
 async function pipeline(label, type, ctx) {
+  debugLog = '';
   const loading = $('ai-loading');
-  const loadTxt = $('ai-loading-txt');
-  const output = $('ai-output');
-  const inner = $('ai-out-inner');
+  const ltxt = $('ai-ltxt');
+  const out = $('ai-out');
+  const inner = $('ai-inner');
   const sd1=$('sd1'),sl1=$('sl1'),sd2=$('sd2'),sl2=$('sl2');
 
   loading.classList.add('show');
-  output.classList.remove('show');
+  out.classList.remove('show');
   inner.innerHTML = '';
 
   // Step 1: Gemini
-  loadTxt.textContent = '① Gemini 조사·초안 작성 중...';
-  sd1.className = 'step-dot active'; sl1.className = 'step-label active';
-  sd2.className = 'step-dot'; sl2.className = 'step-label';
+  ltxt.textContent = '① Gemini 조사·초안 작성 중...';
+  sd1.className='sdot active'; sl1.className='slbl active';
+  sd2.className='sdot'; sl2.className='slbl';
 
   let gOut = '';
   try {
-    const key = getKey();
-    if (!key) {
-      gOut = '⚠ Gemini API 키가 없습니다. 우측 상단 설정에서 입력해주세요.';
-    } else {
-      // Try with Google Search grounding first
-      let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ contents:[{parts:[{text: gPrompt(label,type,ctx)}]}], tools:[{googleSearch:{}}] })
-      });
-      let d = await res.json();
-      if (!res.ok) {
-        // Fallback without search tool
-        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ contents:[{parts:[{text: gPrompt(label,type,ctx)}]}] })
-        });
-        d = await res.json();
-      }
-      if (!res.ok) {
-        gOut = '⚠ Gemini API 오류 (' + res.status + '): ' + (d.error?.message || '알 수 없는 오류') + '\n\n키 확인 후 설정에서 다시 저장해주세요.';
-      } else {
-        gOut = d.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('') || '결과 없음';
-      }
+    gOut = await geminiCall(gPrompt(label, type, ctx), true);
+  } catch(e) {
+    // retry without search
+    try {
+      dbg('[Gemini] 검색 없이 재시도...');
+      gOut = await geminiCall(gPrompt(label, type, ctx), false);
+    } catch(e2) {
+      gOut = `⚠ Gemini 오류: ${e2.message}`;
     }
-  } catch(e) { gOut = '⚠ Gemini 연결 오류: ' + e.message; }
+  }
 
   // Step 2: Claude
-  loadTxt.textContent = '② Claude 분석·정제 중...';
-  sd1.className = 'step-dot done'; sl1.className = 'step-label done';
-  sd2.className = 'step-dot active'; sl2.className = 'step-label active';
+  ltxt.textContent = '② Claude 분석·정제 중...';
+  sd1.className='sdot done'; sl1.className='slbl done';
+  sd2.className='sdot active'; sl2.className='slbl active';
 
   let cOut = '';
   try {
+    dbg('[Claude] calling Anthropic API...');
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:cPrompt(label,ctx,gOut)}] })
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:cPrompt(label,ctx,gOut)}]
+      })
     });
+    dbg(`[Claude] status: ${res.status}`);
+    const d = await res.json();
     if (res.ok) {
-      const d = await res.json();
-      cOut = d.content?.map(b=>b.text||'').join('')||'응답 없음';
+      cOut = d.content?.map(b=>b.text||'').join('') || '응답 없음';
+      dbg(`[Claude] OK, ${cOut.length}자`);
     } else {
-      const d = await res.json();
-      cOut = `Claude 오류: ${d.error?.message||res.status}`;
+      cOut = `⚠ Claude 오류 (${res.status}): ${d.error?.message||JSON.stringify(d)}`;
+      dbg(`[Claude] ERROR: ${cOut}`);
     }
-  } catch(e) { cOut = `Claude 연결 오류: ${e.message}`; }
+  } catch(e) {
+    cOut = `⚠ Claude 연결 오류: ${e.message}`;
+    dbg(`[Claude] EXCEPTION: ${e.message}`);
+  }
 
   loading.classList.remove('show');
-  sd1.className='step-dot done'; sl1.className='step-label done';
-  sd2.className='step-dot done'; sl2.className='step-label done';
-  output.classList.add('show');
+  sd1.className='sdot done'; sl1.className='slbl done';
+  sd2.className='sdot done'; sl2.className='slbl done';
+  out.classList.add('show');
 
   inner.innerHTML = `
-    <div class="ai-out-section">
-      <div class="ai-out-label gemini">① Gemini — 조사·초안</div>
-      <div class="ai-out-content">${gOut}</div>
+    <div class="ai-out-sec">
+      <div class="ai-out-lbl g">① Gemini — 조사·초안</div>
+      <div class="ai-out-box">${gOut}</div>
     </div>
-    <div class="ai-out-section">
-      <div class="ai-out-label claude">② Claude — 분석·정제</div>
-      <div class="ai-out-content claude-out">${cOut}</div>
+    <div class="ai-out-sec">
+      <div class="ai-out-lbl c">② Claude — 분석·정제</div>
+      <div class="ai-out-box cl">${cOut}</div>
     </div>`;
 }
 
-// ── GEMINI EXTRACT ─────────────────────────────────────────────────
-const EXTRACT = text => `다음 건축 현상설계 공모 지침서에서 정보를 추출해 JSON만 응답하세요. 추가 설명 없이 JSON만.
-{"name":"","deadline":"YYYY-MM-DD","client":"","area":"","budget":"","program":"줄바꿈\\n구분","deliverables":"","key_notes":""}
-지침서: ${text.slice(0,8000)}`;
-
-async function analyzeURL() {
-  const url = $('brief-url').value.trim();
-  if (!url) { alert('URL을 입력해주세요.'); return; }
-  setA(true);
-  const raw = await geminiCall(`다음 URL의 공모 페이지를 분석해 정보를 추출하세요.\nURL: ${url}\n\n${EXTRACT('[URL 내용 분석]')}`);
-  setA(false);
-  if (raw) fill(raw);
-}
-async function analyzeText() {
-  const txt = $('brief-txt').value.trim();
-  if (!txt) { alert('텍스트를 붙여넣어 주세요.'); return; }
-  setA(true);
-  const raw = await geminiCall(EXTRACT(txt));
-  setA(false);
-  if (raw) fill(raw);
-}
-async function geminiCall(prompt) {
-  try {
-    const key = getKey();
-    if (!key) { alert('Gemini API 키를 설정에서 입력해주세요.'); return null; }
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ contents:[{parts:[{text:prompt}]}] })
-    });
-    const d = await res.json();
-    if (!res.ok) {
-      alert(`Gemini API 오류 (${res.status}): ${d.error?.message||'알 수 없는 오류'}\n\nAPI 키를 확인해주세요.`);
-      return null;
-    }
-    return d.candidates?.[0]?.content?.parts?.[0]?.text||null;
-  } catch(e) { alert('Gemini 연결 오류: '+e.message); return null; }
-}
-function setA(on) {
-  $('a-loading').classList.toggle('show',on);
-  $('btn-url').disabled=on; $('btn-txt').disabled=on;
-}
-function fill(raw) {
-  try {
-    const d = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    if(d.name)$('f-name').value=d.name;
-    if(d.deadline)$('f-deadline').value=d.deadline;
-    if(d.client)$('f-client').value=d.client;
-    if(d.area)$('f-area').value=d.area;
-    if(d.budget)$('f-budget').value=d.budget;
-    if(d.program)$('f-program').value=d.program;
-    if(d.deliverables)$('f-deliverables').value=d.deliverables;
-    if(d.key_notes)$('f-notes').value=d.key_notes;
-    const prev = $('ai-preview');
-    prev.innerHTML = [
-      d.name&&`<div class="preview-row"><span class="preview-key">공모명</span><span class="preview-val">${d.name}</span></div>`,
-      d.deadline&&`<div class="preview-row"><span class="preview-key">마감일</span><span class="preview-val">${d.deadline}</span></div>`,
-      d.client&&`<div class="preview-row"><span class="preview-key">발주처</span><span class="preview-val">${d.client}</span></div>`,
-      d.area&&`<div class="preview-row"><span class="preview-key">연면적</span><span class="preview-val">${d.area}</span></div>`,
-      d.key_notes&&`<div class="preview-row"><span class="preview-key">특이사항</span><span class="preview-val">${d.key_notes}</span></div>`,
-    ].filter(Boolean).join('');
-    prev.classList.add('show');
-  } catch(e) { alert('파싱 오류. 수동 입력 해주세요.\n'+raw.slice(0,200)); }
-}
-
 // ── CRUD ───────────────────────────────────────────────────────────
-function saveProject() {
-  const name = $('f-name').value.trim();
-  if (!name) { alert('공모명을 입력해주세요.'); return; }
-  const id = 'p_'+Date.now();
-  const checklists = {};
-  STAGES.forEach(s=>{ checklists[s.key] = DEFAULT_CHECKS[s.key].map(c=>({...c,done:false})); });
-  projects.unshift({ id, name, deadline:$('f-deadline').value, client:$('f-client').value, area:$('f-area').value, budget:$('f-budget').value, program:$('f-program').value, deliverables:$('f-deliverables').value, notes:$('f-notes').value, checklists, stageNotes:{}, createdAt:new Date().toISOString() });
-  save(); closeAddModal(); renderSidebar(); select(id);
-}
-function deleteProject(id) {
-  if(!confirm('삭제하시겠습니까?'))return;
-  projects=projects.filter(p=>p.id!==id); save(); currentId=null;
-  $('detail').classList.add('hidden'); $('empty-state').classList.remove('hidden'); renderSidebar();
-}
-function toggleCheck(sk,idx) {
-  const p=projects.find(x=>x.id===currentId);
-  if(!p?.checklists?.[sk])return;
-  p.checklists[sk][idx].done=!p.checklists[sk][idx].done;
+function toggleCheck(sk, i) {
+  const p = projects.find(x=>x.id===curId);
+  if (!p?.checklists?.[sk]) return;
+  p.checklists[sk][i].done = !p.checklists[sk][i].done;
   save(); render(); renderSidebar();
 }
 function addCheck(sk) {
-  const text=prompt('새 체크리스트 항목:'); if(!text)return;
-  const p=projects.find(x=>x.id===currentId);
-  if(!p.checklists[sk])p.checklists[sk]=[];
-  p.checklists[sk].push({text,sub:'',done:false}); save(); render();
+  const t = prompt('새 체크리스트 항목:'); if(!t) return;
+  const p = projects.find(x=>x.id===curId);
+  p.checklists[sk].push({text:t,sub:'',done:false}); save(); render();
 }
 function saveNote(val) {
-  const p=projects.find(x=>x.id===currentId); if(!p)return;
+  const p = projects.find(x=>x.id===curId); if(!p) return;
   if(!p.stageNotes)p.stageNotes={};
-  p.stageNotes[STAGES[currentStage].key]=val; save();
+  p.stageNotes[STAGES[curStage].key]=val; save();
 }
-function switchStage(i){ currentStage=i; render(); }
+function switchStage(i){ curStage=i; render(); }
+function deleteProj(id) {
+  if(!confirm('삭제하시겠습니까?'))return;
+  projects=projects.filter(p=>p.id!==id); save(); curId=null;
+  $('detail').classList.add('hidden'); $('empty').classList.remove('hidden'); renderSidebar();
+}
+function editProgs(id) {
+  // 간단히 alert로 안내 (추후 프로그램 편집 모달 추가 예정)
+  alert('프로그램 편집 기능은 다음 업데이트에서 추가됩니다.\n현재는 삭제 후 새로 추가해주세요.');
+}
 
 // ── HELPERS ────────────────────────────────────────────────────────
 function daysLeft(d){ if(!d)return null; return Math.ceil((new Date(d)-new Date())/86400000); }
 function calcPct(p){ let t=0,d=0; STAGES.forEach(s=>{const it=p.checklists?.[s.key]||[];t+=it.length;d+=it.filter(i=>i.done).length;}); return t?Math.round(d/t*100):0; }
 
-// ── MODAL / DRAWER ─────────────────────────────────────────────────
-function openAddModal(){
+// ── MODAL ──────────────────────────────────────────────────────────
+function openAdd(){
+  modalProgs=[];
   $('add-modal').classList.add('open');
-  ['f-name','f-deadline','f-client','f-area','f-budget','f-program','f-deliverables','f-notes','brief-url','brief-txt'].forEach(id=>{$(id).value='';});
-  $('ai-preview').classList.remove('show');
+  ['f-name','f-deadline','f-client','f-location','f-site-area','f-usage','f-area','f-design-fee','f-budget','f-deliverables','f-notes','brief-url','pi-cat','pi-prog','pi-area'].forEach(id=>{$(id).value='';});
+  $('brief-file').value='';
+  $('ai-prev').classList.remove('show');
+  $('upload-status').className='upload-status';
+  renderModalProgTable();
 }
-function closeAddModal(){ $('add-modal').classList.remove('open'); }
-function toggleDrawer(){ $('drawer').classList.toggle('open'); $('gemini-key-inp').value=getKey(); }
-function saveKey(){ localStorage.setItem('gemini_key',$('gemini-key-inp').value.trim()); alert('저장됐습니다.'); }
+function closeAdd(){ $('add-modal').classList.remove('open'); }
+
+// ── DRAWER ─────────────────────────────────────────────────────────
+function toggleDrawer(){ $('drawer').classList.toggle('open'); $('gkey-inp').value=getKey(); }
+function saveKey(){ localStorage.setItem('gemini_key',$('gkey-inp').value.trim()); alert('저장됐습니다.'); }
 
 // ── EXPORT / IMPORT ────────────────────────────────────────────────
-function exportData(){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(projects,null,2)],{type:'application/json'})); a.download=`competition_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
+function exportData(){ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(projects,null,2)],{type:'application/json'}));a.download=`competition_${new Date().toISOString().slice(0,10)}.json`;a.click(); }
 function importData(e){ const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(Array.isArray(d)){projects=[...d,...projects];save();renderSidebar();alert(`${d.length}개 가져왔습니다.`);}}catch{alert('파일 오류');}};r.readAsText(f); }
-function clearAll(){ if(!confirm('모두 삭제?'))return;projects=[];save();currentId=null;$('detail').classList.add('hidden');$('empty-state').classList.remove('hidden');renderSidebar(); }
+function clearAll(){ if(!confirm('모두 삭제?'))return;projects=[];save();curId=null;$('detail').classList.add('hidden');$('empty').classList.remove('hidden');renderSidebar(); }
 
 // ── INIT ───────────────────────────────────────────────────────────
 renderSidebar();
-if(projects.length) select(projects[0].id);
+if(projects.length) selectProj(projects[0].id);
 </script>
 </body>
 </html>
