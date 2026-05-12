@@ -451,7 +451,7 @@ let modalProgs = []; // 모달에서 입력 중인 프로그램 목록
 
 const save = () => localStorage.setItem('cos_v3', JSON.stringify(projects));
 const EDGE_FN_URL = 'https://uugexirglklppgvdvwxn.supabase.co/functions/v1/claude-proxy';
-const getSbKey = () => localStorage.getItem('sb_key') || '';
+const getSbKey = () => localStorage.getItem('sb_key') || 'sb_publishable_YhkaNWrbh74urnUYYFV07g_BBLtocMe';
 
 async function callProxy(system, user) {
   const key = getSbKey();
